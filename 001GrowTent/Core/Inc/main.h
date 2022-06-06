@@ -75,8 +75,8 @@ void Error_Handler(void);
 #define LED_Pin 							GPIO_PIN_2
 #define LED_GPIO_Port 						GPIOA
 #define SD_SPI_HANDLE 						hspi1
-#define SD_CS_GPIO_Port 					GPIOB
-#define SD_CS_Pin  							GPIO_PIN_6
+#define SD_CS_GPIO_Port 					GPIOA
+#define SD_CS_Pin  							GPIO_PIN_8
 
 /* Physical connections for Temperature and Humidity Sensors-------------------------*/
 #define TEMPHUMID_1_PIN 					GPIO_PIN_0
@@ -90,8 +90,8 @@ void Error_Handler(void);
 #define HEATER_RELAY_PIN					GPIO_PIN_7			//D4 -> IN4
 #define RELAY_PORT 							GPIOB
 
-#define RELAY_ON							GPIO_PIN_SET
-#define	RELAY_OFF							GPIO_PIN_RESET
+#define RELAY_ON							GPIO_PIN_RESET
+#define	RELAY_OFF							GPIO_PIN_SET
 
 /* Physical connections for I2C connections -----------------------------------------*/
 #define LCD_SCL_PIN							GPIO_PIN_9

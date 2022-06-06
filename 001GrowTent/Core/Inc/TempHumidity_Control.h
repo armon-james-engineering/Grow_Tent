@@ -14,7 +14,7 @@
 
 /* Define macros for DHT11 communication */
 
-#define DHT11_START_COMM_TIME				10000U		//Time to send initialise pulse to DHT11 = 20ms
+#define DHT11_START_COMM_TIME				12000U		//Time to send initialise pulse to DHT11 = 20ms
 #define DHT11_WAIT_FOR_RESPONSE_TIME		30U			//Maximum time to wait for complete flag from Input Capture ~30ms
 
 

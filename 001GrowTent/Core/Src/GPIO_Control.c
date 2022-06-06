@@ -70,10 +70,10 @@ void MX_GPIO_Init(void)
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(TEMPHUMID_PORT, &GPIO_InitStruct);
 
-	/*Configure GPIO pin : PB6 SPI */
-	GPIO_InitStruct.Pin = GPIO_PIN_6;
+	/*Configure GPIO pin : PA8 SPI CS pin */
+	GPIO_InitStruct.Pin = GPIO_PIN_8;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
