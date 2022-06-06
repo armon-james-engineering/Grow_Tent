@@ -1,0 +1,5 @@
+../Core/Src/LCD_Control.c:38:6:LCD_I2C_Init	24	static
+../Core/Src/LCD_Control.c:70:6:LCD_WriteAlphaLCD	40	static
+../Core/Src/LCD_Control.c:93:6:LCD_WriteNumericLCD	40	static
+../Core/Src/LCD_Control.c:123:6:LCD_SetCursorPosition	40	static
+../Core/Src/LCD_Control.c:141:6:LCD_ClearDisplay	24	static

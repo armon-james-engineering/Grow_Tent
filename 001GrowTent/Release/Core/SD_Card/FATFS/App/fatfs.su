@@ -1,0 +1,2 @@
+../Core/SD_Card/FATFS/App/fatfs.c:31:6:MX_FATFS_Init	8	static
+../Core/SD_Card/FATFS/App/fatfs.c:46:7:get_fattime	0	static

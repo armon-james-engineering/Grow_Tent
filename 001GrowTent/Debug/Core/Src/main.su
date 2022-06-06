@@ -1,0 +1,6 @@
+../Core/Src/main.c:52:5:main	8	static
+../Core/Src/main.c:121:13:update_Sensors	8	static
+../Core/Src/main.c:141:13:update_LCD	40	static
+../Core/Src/main.c:219:13:I2C_Setup	8	static
+../Core/Src/main.c:238:13:SPI_Setup	8	static
+../Core/Src/main.c:266:6:Error_Handler	4	static,ignoring_inline_asm

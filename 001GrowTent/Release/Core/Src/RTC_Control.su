@@ -1,0 +1,4 @@
+../Core/Src/RTC_Control.c:182:6:RTC_SetAlarm	8	static
+../Core/Src/RTC_Control.c:62:6:RTC_Setup	32	static
+../Core/Src/RTC_Control.c:131:6:RTC_GetTimeDate	32	static
+../Core/Src/RTC_Control.c:375:6:HAL_RTC_AlarmAEventCallback	8	static

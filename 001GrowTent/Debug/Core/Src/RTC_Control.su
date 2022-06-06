@@ -1,0 +1,11 @@
+../Core/Src/RTC_Control.c:62:6:RTC_Setup	8	static
+../Core/Src/RTC_Control.c:96:13:RTC_SetDate	8	static
+../Core/Src/RTC_Control.c:114:13:RTC_SetTime	8	static
+../Core/Src/RTC_Control.c:131:6:RTC_GetTimeDate	8	static
+../Core/Src/RTC_Control.c:182:6:RTC_SetAlarm	8	static
+../Core/Src/RTC_Control.c:216:13:RTC_PrintTimeDate	16	static
+../Core/Src/RTC_Control.c:268:13:RTC_SetBackupTimeDate	24	static
+../Core/Src/RTC_Control.c:281:13:RTC_GetBackupTimeDate	16	static
+../Core/Src/RTC_Control.c:315:13:RTC_ConvertToBCD	4	static
+../Core/Src/RTC_Control.c:345:13:RTC_ConvertToInteger	4	static
+../Core/Src/RTC_Control.c:375:6:HAL_RTC_AlarmAEventCallback	16	static

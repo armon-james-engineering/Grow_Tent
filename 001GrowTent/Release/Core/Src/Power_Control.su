@@ -1,0 +1,2 @@
+../Core/Src/Power_Control.c:27:6:PowerControl_Init	40	static
+../Core/Src/Power_Control.c:60:6:Power_Control_SetRelay	0	static

@@ -1,0 +1,5 @@
+../Core/Src/TempHumidity_Timer2_Control.c:78:6:tempHumidity_Timer_Start	24	static
+../Core/Src/TempHumidity_Timer2_Control.c:129:13:tempHumidity_Timer_Read_Setup	16	static
+../Core/Src/TempHumidity_Timer2_Control.c:167:6:tempHumidity_EndTimers	8	static
+../Core/Src/TempHumidity_Timer2_Control.c:187:6:HAL_TIM_OC_DelayElapsedCallback	16	static
+../Core/Src/TempHumidity_Timer2_Control.c:210:6:HAL_TIM_IC_CaptureCallback	24	static
