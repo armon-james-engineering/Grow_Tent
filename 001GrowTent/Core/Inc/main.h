@@ -98,6 +98,14 @@ void Error_Handler(void);
 #define LCD_SDA_PIN							GPIO_PIN_10
 #define LCD_PORT							GPIOA
 
+/* Physical connections for SPI connections -----------------------------------------*/
+#define SPI_SCLK_PIN						GPIO_PIN_3			//D13
+#define SPI_MISO_PIN						GPIO_PIN_4			//D12
+#define SPI_MOSI_PIN						GPIO_PIN_5			//D11
+#define SPI_PORT							GPIOB
+#define SPI_CS_PIN							GPIO_PIN_8			//D9
+#define SPI_CS_PORT							GPIOA
+
 #define SENSOR_UPDATE_VALUE					5000U			//in ms
 #define LCD_UPDATE_VALUE					1000U			//in ms
 #define MODE_UPDATE_VALUE					10000U			//in ms
