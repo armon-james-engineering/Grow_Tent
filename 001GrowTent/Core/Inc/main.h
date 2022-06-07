@@ -30,6 +30,7 @@ extern "C" {
 #include "stm32l4xx_hal.h"
 #include "stm32l4xx_hal_conf.h"
 #include "stm32l4xx_it.h"
+#include "user_diskio_spi.h"
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -43,7 +44,7 @@ extern "C" {
 #include "LCD_Control.h"
 #include "Monitor_GrowTent.h"
 #include "SD_Card_Control.h"
-#include "user_diskio_spi.h"
+
 
 
 /* Set global definitions-----------------------------------------------------*/

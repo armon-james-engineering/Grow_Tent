@@ -38,6 +38,7 @@ uint8_t LCD_InitDataTest[] = {"Check"};
 void SystemClock_Config(void);
 void MX_GPIO_Init(void);
 void MX_USART2_UART_Init(void);
+void MX_FATFS_Init(void);
 static void update_LCD(void);
 static void update_Sensors(void);
 static void I2C_Setup(void);
@@ -98,9 +99,6 @@ int main(void)
 	{
 		update_Sensors();
 
-		GrowTent_Mode();
-		SD_Control_Write();
-
 		/* Reset flags */
 		flags.sensorUpdateFlag = 0;
 	}
@@ -108,6 +106,7 @@ int main(void)
 	if(flags.modeUpdateFlag)
 	{
 		GrowTent_Mode();
+		SD_Control_Write();
 
 		/* Reset flags */
 		flags.modeUpdateFlag = 0;

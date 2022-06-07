@@ -179,7 +179,7 @@ int TempHumid_Read(uint8_t sensorNumber)
 						systemVariables.temperature_frac = TempHumidityDataBuffer[1][3];
 
 
-					/*if(sensorValidValueCount == DHT11_NUMBER_OF_SENSORS)
+					if(sensorValidValueCount == DHT11_NUMBER_OF_SENSORS)
 					{
 						tempHumidity_Average(sensorNumber);
 						systemVariables.humidity_int = TempHumidityDataAverage[0];
@@ -188,7 +188,7 @@ int TempHumid_Read(uint8_t sensorNumber)
 						systemVariables.temperature_frac = TempHumidityDataAverage[3];
 
 						#ifdef debug
-							 Print the data we have
+							/* Print the data we have */
 							tempHumidity_Printout(DHT11_PRINT_AVERAGE);
 						#endif
 
@@ -200,7 +200,7 @@ int TempHumid_Read(uint8_t sensorNumber)
 						systemVariables.humidity_frac = 0;
 						systemVariables.temperature_int = 0;
 						systemVariables.temperature_frac = 0;
-					}*/
+					}
 
 					sensorValidValueCount = 0;
 				}
@@ -255,8 +255,6 @@ static void tempHumid_StartDataReadSequence(uint8_t sensorNumber)
 		/* Set data line to high and start timer for 20ms */
 		HAL_GPIO_WritePin(TEMPHUMID_PORT, TEMPHUMID_2_PIN, GPIO_PIN_SET);
 	}
-
-
 }
 
 /**
