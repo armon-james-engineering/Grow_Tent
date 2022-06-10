@@ -170,14 +170,14 @@ int TempHumid_Read(uint8_t sensorNumber)
 						/* Print the data we have */
 						tempHumidity_Printout(sensorNumber);
 					#endif
-
+						/*
 						sensorValidValueCount++;
 
 						systemVariables.humidity_int = TempHumidityDataBuffer[1][0];
 						systemVariables.humidity_frac = TempHumidityDataBuffer[1][1];
 						systemVariables.temperature_int = TempHumidityDataBuffer[1][2];
 						systemVariables.temperature_frac = TempHumidityDataBuffer[1][3];
-
+	*/
 
 					if(sensorValidValueCount == DHT11_NUMBER_OF_SENSORS)
 					{
@@ -577,11 +577,11 @@ static void tempHumidPrintErrorMessage(uint8_t newErrorMessage, uint8_t sensorNu
 
 	if(sensorNumber == DHT11_SENSOR_1)
 	{
-		sensorBufferNumber = 0;
+		sensorBufferNumber = 1;
 	}
 	else if(sensorNumber == DHT11_SENSOR_2)
 	{
-		sensorBufferNumber = 1;
+		sensorBufferNumber = 2;
 	}
 
 	if(errorMessage != newErrorMessage)

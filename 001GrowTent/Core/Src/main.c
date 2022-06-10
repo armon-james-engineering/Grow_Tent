@@ -127,11 +127,11 @@ static void update_Sensors(void)
 
 	 /* Reset flags */
 	 flags.tempHumidDataReadyFlag = 0;
-
+/*
 	while(flags.tempHumidDataReadyFlag == 0)
 	{
 		 TempHumid_Read(DHT11_SENSOR_2);
-	}
+	}*/
 }
 
 /**

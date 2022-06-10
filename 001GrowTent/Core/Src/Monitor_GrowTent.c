@@ -34,11 +34,19 @@ uint8_t growTentMode = 0;
 
 void GrowTent_Mode(void)
 {
-	/* If it is daytime, then normal mode (mode 1) is:
+	/* If it is daytime, then normal mode (mode 0) is:
 	 * Main Light		-> Running
 	 * Extractor Fan	-> Running
 	 * Heater			-> Running
 	 * Humidity 		-> Running*/
+
+	char buff[2];
+
+	itoa(growTentMode, buff, 10);
+	HAL_UART_Transmit(&huart2, (uint8_t*)"Mode: ", sizeof("Mode: "), USART_TIMEOUT_VALUE);
+	HAL_UART_Transmit(&huart2,(uint8_t*)buff, sizeof(buff), USART_TIMEOUT_VALUE);
+	HAL_UART_Transmit(&huart2, (uint8_t*)"\n", sizeof("\n"), USART_TIMEOUT_VALUE);
+
 	if(flags.dayNightFlag == DAY)
 	{
 		Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_ON);
@@ -48,7 +56,7 @@ void GrowTent_Mode(void)
 			if(systemVariables.humidity_int < HUMIDITY_LOW)
 			{
 				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
-				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_ON);
+				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
 				growTentMode = 1;
 			}
 			else if(systemVariables.humidity_int > HUMIDITY_HIGH)
@@ -62,6 +70,12 @@ void GrowTent_Mode(void)
 				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_ON);
 				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
 				growTentMode = 3;
+			}
+			else if(systemVariables.temperature_int < TEMPERATURE_LOW)
+			{
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_ON);
+				growTentMode = 4;
 			}
 			else
 			{
@@ -105,8 +119,19 @@ void GrowTent_Mode(void)
 		{
 			if(systemVariables.temperature_int < TEMPERATURE_NOMINAL)
 			{
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
+				//Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
+				growTentMode = 1;
+			}
+		}
+
+		/* Temperature too low. */
+		if(growTentMode == 4)
+		{
+			if(systemVariables.temperature_int > TEMPERATURE_NOMINAL)
+			{
 				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_ON);
-				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
+				//Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
 				growTentMode = 0;
 			}
 		}
@@ -114,14 +139,14 @@ void GrowTent_Mode(void)
 
 	if(flags.dayNightFlag == NIGHT)
 	{
-		if((systemVariables.temperature_int > TEMPERATURE_LOW) && (systemVariables.temperature_int < TEMPERATURE_HIGH) &&
-				(systemVariables.humidity_int > HUMIDITY_LOW) && (systemVariables.humidity_int < HUMIDITY_HIGH))
-		{
+		//if((systemVariables.temperature_int > TEMPERATURE_LOW) && (systemVariables.temperature_int < TEMPERATURE_HIGH) &&
+				//(systemVariables.humidity_int > HUMIDITY_LOW) && (systemVariables.humidity_int < HUMIDITY_HIGH))
+		//{
 			Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
 			Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
 			Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
 			Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
-		}
+		//}
 	}
 
 

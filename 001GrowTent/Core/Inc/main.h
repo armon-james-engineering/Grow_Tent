@@ -73,15 +73,15 @@ void Error_Handler(void);
 #define SWCLK_GPIO_Port 					GPIOA
 #define VCP_RX_Pin 							GPIO_PIN_15
 #define VCP_RX_GPIO_Port 					GPIOA
-#define LED_Pin 							GPIO_PIN_2
+#define LED_Pin 							GPIO_PIN_7			//A6
 #define LED_GPIO_Port 						GPIOA
 #define SD_SPI_HANDLE 						hspi1
 #define SD_CS_GPIO_Port 					GPIOA
 #define SD_CS_Pin  							GPIO_PIN_8
 
 /* Physical connections for Temperature and Humidity Sensors-------------------------*/
-#define TEMPHUMID_1_PIN 					GPIO_PIN_0
-#define TEMPHUMID_2_PIN 					GPIO_PIN_1
+#define TEMPHUMID_1_PIN 					GPIO_PIN_0			//A0
+#define TEMPHUMID_2_PIN 					GPIO_PIN_1			//A1
 #define TEMPHUMID_PORT 						GPIOA
 
 /* Physical connections for relays------------------------ --------------------------*/
@@ -95,8 +95,8 @@ void Error_Handler(void);
 #define	RELAY_OFF							GPIO_PIN_SET
 
 /* Physical connections for I2C connections -----------------------------------------*/
-#define LCD_SCL_PIN							GPIO_PIN_9
-#define LCD_SDA_PIN							GPIO_PIN_10
+#define LCD_SCL_PIN							GPIO_PIN_9			//D1
+#define LCD_SDA_PIN							GPIO_PIN_10			//D0
 #define LCD_PORT							GPIOA
 
 /* Physical connections for SPI connections -----------------------------------------*/
