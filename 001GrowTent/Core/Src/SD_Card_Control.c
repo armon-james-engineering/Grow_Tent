@@ -101,11 +101,19 @@ void SD_Control_Init(void)
 		//Be a tidy kiwi - don't forget to close your file!
 		//f_close(&fil);
 
-		//Now let's try and write a file "write.txt"
-		fres = f_open(&fil, "Log.txt", FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
+		//Now let's try and write a file
+		char fullFileName[20] = {"Log_"};
+		char hourFile[] = {(char)systemVariables.timeHours};
+		char dateFile[] = {(char)systemVariables.dateDate};
+		char monthFile[] = {'_',(char)systemVariables.dateMonth};
+		strcat(fullFileName, hourFile);
+		strcat(fullFileName, dateFile);
+		strcat(fullFileName, monthFile);
+
+		fres = f_open(&fil, fullFileName, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
 		if(fres == FR_OK)
 		{
-			myprintf("I was able to open 'Log.txt' for writing\r\n");
+			myprintf("I was able to open %s for writing\r\n", fullFileName);
 		}
 		else
 		{
