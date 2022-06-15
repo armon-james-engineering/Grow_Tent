@@ -69,6 +69,7 @@ int main(void)
   MX_USART2_UART_Init();
   TempHumid_Init();
   RTC_Setup();
+  RTC_GetTimeDate();
   LCD_I2C_Init();
   MX_FATFS_Init();
   SD_Control_Init();

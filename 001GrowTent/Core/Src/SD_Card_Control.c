@@ -102,13 +102,16 @@ void SD_Control_Init(void)
 		//f_close(&fil);
 
 		//Now let's try and write a file
-		char fullFileName[20] = {"Log_"};
-		char hourFile[] = {(char)systemVariables.timeHours};
-		char dateFile[] = {(char)systemVariables.dateDate};
-		char monthFile[] = {'_',(char)systemVariables.dateMonth};
-		strcat(fullFileName, hourFile);
+		char fullFileName[30] = {"Log_"};
+		char dateFile[3];
+		itoa(systemVariables.dateDate, dateFile, 10);
+		char monthFile[3];
+		itoa(systemVariables.dateMonth, monthFile, 10);
+		char hourFile[3];
+		itoa(systemVariables.timeHours, hourFile, 10);
 		strcat(fullFileName, dateFile);
 		strcat(fullFileName, monthFile);
+		//strcat(fullFileName, hourFile);
 
 		fres = f_open(&fil, fullFileName, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
 		if(fres == FR_OK)
