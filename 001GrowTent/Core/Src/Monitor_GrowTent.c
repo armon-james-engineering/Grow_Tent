@@ -51,6 +51,7 @@ void GrowTent_Mode(void)
 	{
 		Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_ON);
 
+		/* Nominal operation mode */
 		if(growTentMode == 0)
 		{
 			if(systemVariables.humidity_int < HUMIDITY_LOW)
@@ -139,25 +140,36 @@ void GrowTent_Mode(void)
 
 	if(flags.dayNightFlag == NIGHT)
 	{
-		//if((systemVariables.temperature_int > TEMPERATURE_LOW) && (systemVariables.temperature_int < TEMPERATURE_HIGH) &&
-				//(systemVariables.humidity_int > HUMIDITY_LOW) && (systemVariables.humidity_int < HUMIDITY_HIGH))
-		//{
+		/* Nominal operation mode (night) */
+		if(growTentMode == 0)
+		{
 			Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
 			Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
 			Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
 			Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
-		//}
+		}
+
+		if(systemVariables.humidity_int > HUMIDITY_HIGH)
+		{
+			Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_ON);
+			Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
+			Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
+			Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
+			growTentMode = 5;
+		}
+		else
+		{
+			growTentMode = 0;
+		}
+
+		/* Humidity too high (night). */
+		if(growTentMode == 5)
+		{
+			if(systemVariables.humidity_int < HUMIDITY_NOMINAL)
+			{
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
+				growTentMode = 0;
+			}
+		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-
 }
