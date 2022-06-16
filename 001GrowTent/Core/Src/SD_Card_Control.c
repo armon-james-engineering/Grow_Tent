@@ -107,11 +107,8 @@ void SD_Control_Init(void)
 		itoa(systemVariables.dateDate, dateFile, 10);
 		char monthFile[3];
 		itoa(systemVariables.dateMonth, monthFile, 10);
-		char hourFile[3];
-		itoa(systemVariables.timeHours, hourFile, 10);
 		strcat(fullFileName, dateFile);
 		strcat(fullFileName, monthFile);
-		//strcat(fullFileName, hourFile);
 
 		fres = f_open(&fil, fullFileName, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
 		if(fres == FR_OK)
@@ -131,7 +128,7 @@ void SD_Control_Init(void)
 		fres = f_write(&fil, buff, sizeof(buff), &bytesWrote);
 		if(fres == FR_OK)
 		{
-			myprintf("Wrote %i bytes to 'Log.txt'!\r\n", bytesWrote);
+			myprintf("Wrote %i bytes to %s!\r\n", bytesWrote, fullFileName);
 		}
 		else
 		{

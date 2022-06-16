@@ -137,39 +137,43 @@ void GrowTent_Mode(void)
 			}
 		}
 	}
-
-	if(flags.dayNightFlag == NIGHT)
+	else if(flags.dayNightFlag == NIGHT)
 	{
 		/* Nominal operation mode (night) */
 		if(growTentMode == 0)
 		{
-			Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
-			Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
-			Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
-			Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
+			if(systemVariables.humidity_int > HUMIDITY_HIGH)
+			{
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_ON);
+				Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
+				growTentMode = 5;
+			}
+			else
+			{
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
+			}
 		}
-
-		if(systemVariables.humidity_int > HUMIDITY_HIGH)
-		{
-			Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_ON);
-			Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
-			Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
-			Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
-			growTentMode = 5;
-		}
-		else
-		{
-			growTentMode = 0;
-		}
-
 		/* Humidity too high (night). */
-		if(growTentMode == 5)
+		else if(growTentMode == 5)
 		{
 			if(systemVariables.humidity_int < HUMIDITY_NOMINAL)
 			{
 				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
 				growTentMode = 0;
 			}
+		}
+		else
+		{
+			Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
+			Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
+			Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
+			Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
+			growTentMode = 0;
 		}
 	}
 }

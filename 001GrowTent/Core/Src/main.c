@@ -58,10 +58,13 @@ int main(void)
   HAL_Init();
   //HAL_SuspendTick();
 
+  /* Delay to allow for all power lines to stabilise */
+  HAL_Delay(2000);
+
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* Initialize all configured peripherals */
+  /* Initialise all configured peripherals */
   MX_GPIO_Init();
   I2C_Setup();
   SPI_Setup();
