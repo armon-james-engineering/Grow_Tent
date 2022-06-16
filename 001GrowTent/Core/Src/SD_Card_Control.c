@@ -23,6 +23,8 @@ extern SPI_HandleTypeDef hspi1;
 FATFS FatFs; 	//Fatfs handle
 FIL fil; 		//File handle
 FRESULT fres; //Result after operations
+char fullFileName[] = {"Log_"};
+char fileNameType[] = {".txt"};
 
 static void myprintf(const char *fmt, ...);
 
@@ -101,14 +103,14 @@ void SD_Control_Init(void)
 		//Be a tidy kiwi - don't forget to close your file!
 		//f_close(&fil);
 
-		//Now let's try and write a file
-		char fullFileName[30] = {"Log_"};
+		//Now let's try and write to file
 		char dateFile[3];
 		itoa(systemVariables.dateDate, dateFile, 10);
 		char monthFile[3];
 		itoa(systemVariables.dateMonth, monthFile, 10);
 		strcat(fullFileName, dateFile);
 		strcat(fullFileName, monthFile);
+		strcat(fullFileName, fileNameType);
 
 		fres = f_open(&fil, fullFileName, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
 		if(fres == FR_OK)
@@ -147,7 +149,7 @@ void SD_Control_Write(void)
 {
 	/* Write all variables to file */
 
-	fres = f_open(&fil, "Log.txt", FA_WRITE | FA_OPEN_APPEND);
+	fres = f_open(&fil, fullFileName, FA_WRITE | FA_OPEN_APPEND);
 
 	char buff[3];
 	unsigned char characterASCII[] = {':','.',',','\n','\r','\t'};

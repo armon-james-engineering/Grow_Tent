@@ -15,14 +15,14 @@
 
 /* Set data and time macros -----------------------------------------------------------*/
 
-#define CURRENT_WEEKDAY			RTC_WEEKDAY_MONDAY
-#define CURRENT_DATE 			31
-#define CURRENT_MONTH			RTC_MONTH_MAY
+#define CURRENT_WEEKDAY			RTC_WEEKDAY_THURSDAY
+#define CURRENT_DATE 			16
+#define CURRENT_MONTH			RTC_MONTH_JUNE
 #define CURRENT_YEAR			22
 
 #define CURRENT_SECONDS			00
-#define CURRENT_MINUTES			35
-#define CURRENT_HOURS			20
+#define CURRENT_MINUTES			00
+#define CURRENT_HOURS			12
 
 #define DAY_CYCLE_BEGIN			8
 #define DAY_CYCLE_END			23
