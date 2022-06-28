@@ -107,7 +107,7 @@ void Error_Handler(void);
 #define SPI_CS_PIN							GPIO_PIN_8			//D9
 #define SPI_CS_PORT							GPIOA
 
-#define SENSOR_UPDATE_VALUE					5000U			//in ms
+#define SENSOR_UPDATE_VALUE					6000U			//in ms
 #define LCD_UPDATE_VALUE					1000U			//in ms
 #define MODE_UPDATE_VALUE					10000U			//in ms
 

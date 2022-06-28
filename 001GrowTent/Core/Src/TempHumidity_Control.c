@@ -16,8 +16,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 uint8_t readSequenceStatus;
-uint8_t statusMessage 				= DHT11_INIT_READ;
-uint8_t errorMessage				= DHT11_NOT_STARTED;
+uint8_t statusMessage 				= DHT22_INIT_READ;
+uint8_t errorMessage				= DHT22_NOT_STARTED;
 uint8_t dataCount					= 0;
 uint16_t systicCounter 				= 0;
 uint16_t icTimeOutValue				= 0;
@@ -25,11 +25,13 @@ uint8_t tempHumidDataValidFlag		= FALSE;
 uint8_t tempHumidityCheckSum		= 0;
 uint8_t sensorValidValueCount		= 0;
 
+uint16_t tempRH = 0;
+uint16_t tempT = 0;
 
-uint32_t DHT11_DataBufferInputCapture[DHT11_EXPECTED_TRANSITIONS] = {0};
-uint32_t TempHumidityDataBuffer_Raw[DHT11_EXPECTED_DATA] = {0};
-uint8_t TempHumidityDataBuffer[DHT11_NUMBER_OF_SENSORS][DHT11_STORED_VALUE_NUMBER] = {0};
-uint8_t TempHumidityDataAverage[DHT11_STORED_VALUE_NUMBER] = {0};
+uint32_t DHT22_DataBufferInputCapture[DHT22_EXPECTED_TRANSITIONS] = {0};
+uint32_t TempHumidityDataBuffer_Raw[DHT22_EXPECTED_DATA] = {0};
+uint8_t TempHumidityDataBuffer[DHT22_NUMBER_OF_SENSORS][DHT22_STORED_VALUE_NUMBER] = {0};
+uint8_t TempHumidityDataAverage[DHT22_STORED_VALUE_NUMBER] = {0};
 
 /* External variables ---------------------------------------------------------*/
 extern UART_HandleTypeDef huart2;
@@ -45,13 +47,13 @@ static void tempHumidity_Printout(uint8_t sensorNumber);
 static void tempHumidPrintErrorMessage(uint8_t newErrorstatusMessage, uint8_t sensorNumber);
 static void tempHumidity_Average(uint8_t sensorNumber);
 
-/* DHT11 Status Message Buffer */
-char DHT11StatusBuffer[][40] = { 	"\n\nDHT11 read sequence started\n",
-										"DHT11 IO line start complete\n",
-										"DHT11 IO line pull up verified\n",
-										"DHT11 wait for acknowledgement\n",
-										"DHT11 check acknowledgement time\n",
-										"DHT11 read data\n",
+/* DHT22 Status Message Buffer */
+char DHT22StatusBuffer[][40] = { 	"\n\nDHT22 read sequence started\n",
+										"DHT22 IO line start complete\n",
+										"DHT22 IO line pull up verified\n",
+										"DHT22 wait for acknowledgment\n",
+										"DHT22 check acknowledgment time\n",
+										"DHT22 read data\n",
 										"Temperature Average =  ",
 										"Relative Humidity Average =  ",
 										"Temperature 1 =  ",
@@ -60,16 +62,16 @@ char DHT11StatusBuffer[][40] = { 	"\n\nDHT11 read sequence started\n",
 										"Relative Humidity 2 =  ",
 										"Checksum = "};
 
-/* DHT11 Error Status Message Buffer */
-char DHT11ErrorStatusBuffer[][40] = { 	"\n\nDHT11 Initialisation Error \n",
-										"DHT11 Wait for Acknowledgement Error\n",
-										"DHT11 Acknowledgement Time Error\n",
-										"DHT11 Read Error\n",
+/* DHT22 Error Status Message Buffer */
+char DHT22ErrorStatusBuffer[][40] = { 	"\n\nDHT22 Initialisation Error \n",
+										"DHT22 Wait for acknowledgment Error\n",
+										"DHT22 Acknowledgment Time Error\n",
+										"DHT22 Read Error\n",
 										"Checksum Error\n"};
 
 
 /**
-  * @brief DHT11 Initialise variables and flags for function.
+  * @brief DHT22 Initialise variables and flags for function.
   * @param None
   * @retval None
   */
@@ -78,8 +80,8 @@ void TempHumid_Init(void)
 {
 	/* Set used variables to default values.*/
 
-	statusMessage 	= DHT11_INIT_READ;
-	errorMessage	= DHT11_NOT_STARTED;
+	statusMessage 	= DHT22_INIT_READ;
+	errorMessage	= DHT22_NOT_STARTED;
 
 	tempHumidDataValidFlag = 0;
 	flags.tempHumidICCompleteFlag = 0;
@@ -91,12 +93,20 @@ void TempHumid_Init(void)
 	systemVariables.temperature_int 	= 0;
 	systemVariables.temperature_frac 	= 0;
 
+	for(uint8_t i = 0; i < 5; i++)
+	{
+		TempHumidityDataBuffer[0][i] = 0;
+	}
+
+
+	tempRH = 0;
+	tempT = 0;
 
 	tempHumidityCheckSum = 0;
 }
 
 /**
-  * @brief DHT11 state machine to read and then print data from DHT11
+  * @brief DHT22 state machine to read and then print data from DHT22
   * @param None
   * @retval None
   */
@@ -106,22 +116,22 @@ int TempHumid_Read(uint8_t sensorNumber)
 	/* Check state of read */
 	switch(readSequenceStatus)
 	{
-		case DHT11_NOT_STARTED:
+		case DHT22_NOT_STARTED:
 
 			/* Start data read sequence */
 			TempHumid_Init();
 
 			tempHumid_StartDataReadSequence(sensorNumber);
 
-			tempHumidity_Timer_Start(DHT11_START_COMM_TIME, sensorNumber);
+			tempHumidity_Timer_Start(DHT22_START_COMM_TIME, sensorNumber);
 
-			readSequenceStatus = DHT11_INIT_READ;
+			readSequenceStatus = DHT22_INIT_READ;
 
 			systicCounter = HAL_GetTick();
 
 			break;
 
-		case DHT11_INIT_READ:
+		case DHT22_INIT_READ:
 
 			/* Use systic to figure out if response took too long */
 			icTimeOutValue = HAL_GetTick() - systicCounter;
@@ -131,25 +141,25 @@ int TempHumid_Read(uint8_t sensorNumber)
 			{
 				tempHumidity_ConvertRawData(sensorNumber);
 				tempHumid_ConvertDataToIntegers(sensorNumber);
-				readSequenceStatus = DHT11_READ_DATA;
+				readSequenceStatus = DHT22_READ_DATA;
 			}
 
-			if(icTimeOutValue >  DHT11_WAIT_FOR_RESPONSE_TIME)
+			if(icTimeOutValue >  DHT22_WAIT_FOR_RESPONSE_TIME)
 			{
-				tempHumidPrintErrorMessage(DHT11_WAIT_FOR_ACK_ERROR, sensorNumber);
+				tempHumidPrintErrorMessage(DHT22_WAIT_FOR_ACK_ERROR, sensorNumber);
 				tempHumidity_EndTimers();
-				readSequenceStatus = DHT11_NOT_STARTED;
+				readSequenceStatus = DHT22_NOT_STARTED;
 				flags.tempHumidDataReadyFlag = 2;
 			}
 
 			break;
 
-		case DHT11_READ_DATA:
+		case DHT22_READ_DATA:
 
 			/* Validate checksum */
 			if(tempHumidity_CheckSum_Validate(sensorNumber))
 			{
-				if(sensorNumber == DHT11_SENSOR_1)
+				if(sensorNumber == DHT22_SENSOR_1)
 				{
 					#ifdef debug
 						/* Print the data we have */
@@ -164,7 +174,7 @@ int TempHumid_Read(uint8_t sensorNumber)
 						systemVariables.temperature_frac = TempHumidityDataBuffer[0][3];
 
 				}
-				else if(sensorNumber == DHT11_SENSOR_2)
+				else if(sensorNumber == DHT22_SENSOR_2)
 				{
 					#ifdef debug
 						/* Print the data we have */
@@ -179,7 +189,7 @@ int TempHumid_Read(uint8_t sensorNumber)
 						systemVariables.temperature_frac = TempHumidityDataBuffer[1][3];
 	*/
 
-					if(sensorValidValueCount == DHT11_NUMBER_OF_SENSORS)
+					if(sensorValidValueCount == DHT22_NUMBER_OF_SENSORS)
 					{
 						tempHumidity_Average(sensorNumber);
 						systemVariables.humidity_int = TempHumidityDataAverage[0];
@@ -189,7 +199,7 @@ int TempHumid_Read(uint8_t sensorNumber)
 
 						#ifdef debug
 							/* Print the data we have */
-							tempHumidity_Printout(DHT11_PRINT_AVERAGE);
+							tempHumidity_Printout(DHT22_PRINT_AVERAGE);
 						#endif
 
 					}
@@ -207,7 +217,7 @@ int TempHumid_Read(uint8_t sensorNumber)
 			}
 
 			flags.tempHumidDataReadyFlag = 1;
-			readSequenceStatus = DHT11_NOT_STARTED;
+			readSequenceStatus = DHT22_NOT_STARTED;
 
 			break;
 	}
@@ -215,7 +225,7 @@ int TempHumid_Read(uint8_t sensorNumber)
 }
 
 /**
-  * @brief DHT11 initiate a read by setting up the Timer 2 for Output Capture to start sequence
+  * @brief DHT22 initiate a read by setting up the Timer 2 for Output Capture to start sequence
   * 		 and Input Capture to read data.
   * @param None
   * @retval None
@@ -225,9 +235,9 @@ static void tempHumid_StartDataReadSequence(uint8_t sensorNumber)
 {
 	/* Setup of Temperature and Humidity read sequence */
 
-	if(sensorNumber == DHT11_SENSOR_1)
+	if(sensorNumber == DHT22_SENSOR_1)
 	{
-		/*Configure GPIO pin PA11 as output for DHT11 Temperature and Humidity Sensor */
+		/*Configure GPIO pin PA11 as output for DHT22 Temperature and Humidity Sensor */
 		GPIO_InitTypeDef GPIO_InitStruct = {0};
 
 		GPIO_InitStruct.Pin = TEMPHUMID_1_PIN;
@@ -240,9 +250,9 @@ static void tempHumid_StartDataReadSequence(uint8_t sensorNumber)
 		/* Set data line to high and start timer for 20ms */
 		HAL_GPIO_WritePin(TEMPHUMID_PORT, TEMPHUMID_1_PIN, GPIO_PIN_SET);
 	}
-	else if (sensorNumber == DHT11_SENSOR_2)
+	else if (sensorNumber == DHT22_SENSOR_2)
 	{
-		/*Configure GPIO pin PA11 as output for DHT11 Temperature and Humidity Sensor */
+		/*Configure GPIO pin PA11 as output for DHT22 Temperature and Humidity Sensor */
 		GPIO_InitTypeDef GPIO_InitStruct = {0};
 
 		GPIO_InitStruct.Pin = TEMPHUMID_2_PIN;
@@ -258,7 +268,7 @@ static void tempHumid_StartDataReadSequence(uint8_t sensorNumber)
 }
 
 /**
-  * @brief Convert Timer 2 input capture value to nano seconds, check acknowledgement bit
+  * @brief Convert Timer 2 input capture value to nano seconds, check acknowledgment bit
   * 		and calculate whether bit is 1 or 0
   * @param sensorNumber
   * @retval None
@@ -267,62 +277,62 @@ static void tempHumid_StartDataReadSequence(uint8_t sensorNumber)
 static void tempHumidity_ConvertRawData(uint8_t sensorNumber)
 {
 	/* Convert time values and check if bits are acknowledge or data bits. */
-	for(uint8_t i = 0; i < DHT11_EXPECTED_TRANSITIONS; i++)
+	for(uint8_t i = 0; i < DHT22_EXPECTED_TRANSITIONS; i++)
 	{
 		/* Calculate input captured time in nano seconds. Each input capture clock tick is approximately 333ns */
-		uint32_t temp = ns_CAL_VALUE *  DHT11_DataBufferInputCapture[i];
+		uint32_t temp = ns_CAL_VALUE *  DHT22_DataBufferInputCapture[i];
 
-		/* If bit position is lower than 4, check acknowledgement bit */
-		if(i < DHT11_DATA_START_BIT_POS)
+		/* If bit position is lower than 4, check acknowledgment bit */
+		if(i < DHT22_DATA_START_BIT_POS)
 		{
 
-			/* Check if its acknowledgement or data */
-			if(i == DHT11_ACK_LOW_POS)
+			/* Check if its acknowledgment or data */
+			if(i == DHT22_ACK_LOW_POS)
 			{
-				if((temp > DHT11_ACK_LOW_L) && (temp < DHT11_ACK_LOW_H))
+				if((temp > DHT22_ACK_LOW_L) && (temp < DHT22_ACK_LOW_H))
 				{
 					/* This is a preceding low before valid bit. Do nothing here */
 					tempHumidDataValidFlag += 1;
 				}
 				else
 				{
-					/* Acknowledgement LOW bit not valid */
+					/* Acknowledgment LOW bit not valid */
 					tempHumidDataValidFlag = 0;
 				}
 			}
 
-			/* Check if its acknowledgement or data */
-			if(i == DHT11_ACK_HIGH_POS)
+			/* Check if its acknowledgment or data */
+			if(i == DHT22_ACK_HIGH_POS)
 			{
-				if((temp > DHT11_ACK_HIGH_L) && (temp < DHT11_ACK_HIGH_H))
+				if((temp > DHT22_ACK_HIGH_L) && (temp < DHT22_ACK_HIGH_H))
 				{
 					/* This is a preceding low before valid bit. Do nothing here */
 					tempHumidDataValidFlag += 1;
 				}
 				else
 				{
-					/* Acknowledgement LOW bit not valid */
+					/* Acknowledgment LOW bit not valid */
 					tempHumidDataValidFlag = 0;
 				}
 			}
 		}
 		else
 		{
-			/* If the acknowledgement bit is valid, check whether data is 1 or 0 */
+			/* If the acknowledgment bit is valid, check whether data is 1 or 0 */
 			if(tempHumidDataValidFlag == 2)
 			{
-				if((temp > DHT11_PRE_L) && (temp < DHT11_PRE_H))
+				if((temp > DHT22_PRE_L) && (temp < DHT22_PRE_H))
 				{
 					/* This is a preceding low before valid bit. Do nothing here */
 				}
-				else if((temp > DHT11_DATA_LOW_L) && (temp < DHT11_DATA_LOW_H))
+				else if((temp > DHT22_DATA_LOW_L) && (temp < DHT22_DATA_LOW_H))
 				{
 					/* Data is a valid LOW */
 					TempHumidityDataBuffer_Raw[dataCount] = 0;
 
 					dataCount++;
 				}
-				else if((temp > DHT11_DATA_HIGH_L) && (temp < DHT11_DATA_HIGH_H))
+				else if((temp > DHT22_DATA_HIGH_L) && (temp < DHT22_DATA_HIGH_H))
 				{
 					/* Data is a valid HIGH */
 					TempHumidityDataBuffer_Raw[dataCount] = 1;
@@ -332,7 +342,7 @@ static void tempHumidity_ConvertRawData(uint8_t sensorNumber)
 			else
 			{
 				#ifdef debug
-					tempHumidPrintErrorMessage(DHT11_CHECK_ACK_ERROR, sensorNumber);
+					tempHumidPrintErrorMessage(DHT22_CHECK_ACK_ERROR, sensorNumber);
 				#endif
 				return;
 			}
@@ -349,53 +359,46 @@ static void tempHumid_ConvertDataToIntegers(uint8_t sensorNumber)
 {
 	uint8_t sensorBufferNumber = 0;
 
-	if(sensorNumber == DHT11_SENSOR_1)
+	if(sensorNumber == DHT22_SENSOR_1)
 	{
 		sensorBufferNumber = 0;
 	}
-	else if(sensorNumber == DHT11_SENSOR_2)
+	else if(sensorNumber == DHT22_SENSOR_2)
 	{
 		sensorBufferNumber = 1;
 	}
 
-	for(uint8_t j = 0; j < DHT11_STORED_VALUE_NUMBER; j++)
+	for(uint8_t j = 0; j < DHT22_STORED_VALUE_NUMBER; j++)
 	{
 		TempHumidityDataBuffer[sensorBufferNumber][j] = 0;
 	}
 
 	/* Convert into integers */
-	for(uint8_t i = 0; i < DHT11_EXPECTED_DATA; i++)
+	for(uint8_t i = 0; i < DHT22_EXPECTED_DATA; i++)
 	{
-		/* Relative Humidity Integral */
-		if(i < DHT11_RH_FRACTIONAL_START)
+		/* Relative Humidity */
+		if(i < DHT22_TEMP_INTEGRAL_START)
 		{
-			TempHumidityDataBuffer[sensorBufferNumber][0] |= (TempHumidityDataBuffer_Raw[i] << (7-i));
+			tempRH |= (TempHumidityDataBuffer_Raw[i] << (15-i));
 		}
 
-		/* Relative Humidity Fraction */
-		if((i < DHT11_TEMP_INTEGRAL_START) && (i >= DHT11_RH_FRACTIONAL_START))
+		/* Temperature  */
+		if((i < DHT22_CHSUM_START) && (i >= DHT22_TEMP_INTEGRAL_START))
 		{
-			TempHumidityDataBuffer[sensorBufferNumber][1] |= (TempHumidityDataBuffer_Raw[i] << (15-i));
-		}
-
-		/* Temperature Integral */
-		if((i < DHT11_TEMP_FRACTIONAL_START) && (i >= DHT11_TEMP_INTEGRAL_START))
-		{
-			TempHumidityDataBuffer[sensorBufferNumber][2] |= (TempHumidityDataBuffer_Raw[i] << (23-i));
-		}
-
-		/* Temperature Fraction */
-		if((i < DHT11_CHSUM_START) && (i >= DHT11_TEMP_FRACTIONAL_START))
-		{
-			TempHumidityDataBuffer[sensorBufferNumber][3] |= (TempHumidityDataBuffer_Raw[i] << (31-i));
+			tempT |= (TempHumidityDataBuffer_Raw[i] << (31-i));
 		}
 
 		/* Check Sum */
-		if(i >= DHT11_CHSUM_START)
+		if(i >= DHT22_CHSUM_START)
 		{
 			TempHumidityDataBuffer[sensorBufferNumber][4] |= (TempHumidityDataBuffer_Raw[i] << (39-i));
 		}
 	}
+
+	TempHumidityDataBuffer[sensorBufferNumber][0] = tempRH / 10;
+	TempHumidityDataBuffer[sensorBufferNumber][1] = tempRH % 10;
+	TempHumidityDataBuffer[sensorBufferNumber][2] = tempT / 10;
+	TempHumidityDataBuffer[sensorBufferNumber][3] = tempT % 10;
 }
 
 /**
@@ -412,10 +415,10 @@ static void tempHumidity_Printout(uint8_t sensorNumber)
 	/* Print individual sensors */
 
 	/* Sensor 1 */
-	if(sensorNumber == DHT11_SENSOR_1)
+	if(sensorNumber == DHT22_SENSOR_1)
 	{
 		/* Relative Humidity */
-		HAL_UART_Transmit(&huart2,(uint8_t*)DHT11StatusBuffer[9], sizeof(DHT11StatusBuffer[9]), USART_TIMEOUT_VALUE);
+		HAL_UART_Transmit(&huart2,(uint8_t*)DHT22StatusBuffer[9], sizeof(DHT22StatusBuffer[9]), USART_TIMEOUT_VALUE);
 
 		itoa(TempHumidityDataBuffer[0][0], buff, 10);
 		HAL_UART_Transmit(&huart2,(uint8_t*)buff, sizeof(buff), USART_TIMEOUT_VALUE);
@@ -427,7 +430,7 @@ static void tempHumidity_Printout(uint8_t sensorNumber)
 		HAL_UART_Transmit(&huart2, (uint8_t*)"\n", sizeof("\n"), USART_TIMEOUT_VALUE);
 
 		/* Temperature */
-		HAL_UART_Transmit(&huart2,(uint8_t*)DHT11StatusBuffer[8], sizeof(DHT11StatusBuffer[8]), USART_TIMEOUT_VALUE);
+		HAL_UART_Transmit(&huart2,(uint8_t*)DHT22StatusBuffer[8], sizeof(DHT22StatusBuffer[8]), USART_TIMEOUT_VALUE);
 
 		/* Convert to ASCI */
 		itoa(TempHumidityDataBuffer[0][2], buff, 10);
@@ -442,12 +445,12 @@ static void tempHumidity_Printout(uint8_t sensorNumber)
 		HAL_UART_Transmit(&huart2, (uint8_t*)"\n", sizeof("\n"), USART_TIMEOUT_VALUE);
 	}
 
-	if(sensorNumber == DHT11_SENSOR_2)
+	if(sensorNumber == DHT22_SENSOR_2)
 	{
 		/* Sensor 2 */
 
 		/* Relative Humidity */
-		HAL_UART_Transmit(&huart2,(uint8_t*)DHT11StatusBuffer[11], sizeof(DHT11StatusBuffer[11]), USART_TIMEOUT_VALUE);
+		HAL_UART_Transmit(&huart2,(uint8_t*)DHT22StatusBuffer[11], sizeof(DHT22StatusBuffer[11]), USART_TIMEOUT_VALUE);
 
 		itoa(TempHumidityDataBuffer[1][0], buff, 10);
 		HAL_UART_Transmit(&huart2,(uint8_t*)buff, sizeof(buff), USART_TIMEOUT_VALUE);
@@ -459,7 +462,7 @@ static void tempHumidity_Printout(uint8_t sensorNumber)
 		HAL_UART_Transmit(&huart2, (uint8_t*)"\n", sizeof("\n"), USART_TIMEOUT_VALUE);
 
 		/* Temperature */
-		HAL_UART_Transmit(&huart2,(uint8_t*)DHT11StatusBuffer[10], sizeof(DHT11StatusBuffer[10]), USART_TIMEOUT_VALUE);
+		HAL_UART_Transmit(&huart2,(uint8_t*)DHT22StatusBuffer[10], sizeof(DHT22StatusBuffer[10]), USART_TIMEOUT_VALUE);
 
 		/* Convert to ASCI */
 		itoa(TempHumidityDataBuffer[1][2], buff, 10);
@@ -475,10 +478,10 @@ static void tempHumidity_Printout(uint8_t sensorNumber)
 	}
 
 	/* Print sensor average */
-	if(sensorNumber == DHT11_PRINT_AVERAGE)
+	if(sensorNumber == DHT22_PRINT_AVERAGE)
 	{
 		/* Relative Humidity */
-		HAL_UART_Transmit(&huart2,(uint8_t*)DHT11StatusBuffer[DHT11_RH_ASCII], sizeof(DHT11StatusBuffer[DHT11_RH_ASCII]), USART_TIMEOUT_VALUE);
+		HAL_UART_Transmit(&huart2,(uint8_t*)DHT22StatusBuffer[DHT22_RH_ASCII], sizeof(DHT22StatusBuffer[DHT22_RH_ASCII]), USART_TIMEOUT_VALUE);
 
 		itoa(systemVariables.humidity_int, buff, 10);
 		HAL_UART_Transmit(&huart2,(uint8_t*)buff, sizeof(buff), USART_TIMEOUT_VALUE);
@@ -490,7 +493,7 @@ static void tempHumidity_Printout(uint8_t sensorNumber)
 		HAL_UART_Transmit(&huart2, (uint8_t*)"\n", sizeof("\n"), USART_TIMEOUT_VALUE);
 
 		/* Temperature */
-		HAL_UART_Transmit(&huart2,(uint8_t*)DHT11StatusBuffer[DHT11_TEMPERATURE_ASCII], sizeof(DHT11StatusBuffer[DHT11_TEMPERATURE_ASCII]), USART_TIMEOUT_VALUE);
+		HAL_UART_Transmit(&huart2,(uint8_t*)DHT22StatusBuffer[DHT22_TEMPERATURE_ASCII], sizeof(DHT22StatusBuffer[DHT22_TEMPERATURE_ASCII]), USART_TIMEOUT_VALUE);
 
 		/* Convert to ASCI */
 		itoa(systemVariables.temperature_int, buff, 10);
@@ -510,7 +513,7 @@ static void tempHumidity_Printout(uint8_t sensorNumber)
 }
 
 /**
-  * @brief Check the checksum provided by the DHT11
+  * @brief Check the checksum provided by the DHT22
   * @param sensorNumber
   * @retval None
   */
@@ -519,20 +522,24 @@ static int tempHumidity_CheckSum_Validate(uint8_t sensorNumber)
 {
 	uint8_t temp_CheckSum = 0;
 	uint8_t sensorBufferNumber = 0;
+	uint8_t tempRHT[4] = {0};
 
-	if(sensorNumber == DHT11_SENSOR_1)
+	if(sensorNumber == DHT22_SENSOR_1)
 	{
 		sensorBufferNumber = 0;
 	}
-	else if(sensorNumber == DHT11_SENSOR_2)
+	else if(sensorNumber == DHT22_SENSOR_2)
 	{
 		sensorBufferNumber = 1;
 	}
 
 	/* Check sum = RH_Integral+ RH_Fractional + Temp_Integral + Temp_Fractional */
-	temp_CheckSum = TempHumidityDataBuffer[sensorBufferNumber][0] + TempHumidityDataBuffer[sensorBufferNumber][1] +
-					TempHumidityDataBuffer[sensorBufferNumber][2] + TempHumidityDataBuffer[sensorBufferNumber][3];
+	tempRHT[0] = tempRH >> 8;
+	tempRHT[1] = tempRH;
+	tempRHT[2] = tempT >> 8;
+	tempRHT[3] = tempT;
 
+	temp_CheckSum = tempRHT[0] + tempRHT[1] + tempRHT[2] + tempRHT[3];
 
 	if((temp_CheckSum == TempHumidityDataBuffer[sensorBufferNumber][4]) && (TempHumidityDataBuffer[sensorBufferNumber][4] != 0))
 	{
@@ -541,7 +548,7 @@ static int tempHumidity_CheckSum_Validate(uint8_t sensorNumber)
 	else
 	{
 		#ifdef debug
-			tempHumidPrintErrorMessage(DHT11_CHKSUM_ERROR, sensorNumber);
+			tempHumidPrintErrorMessage(DHT22_CHKSUM_ERROR, sensorNumber);
 		#endif
 
 		return 0;
@@ -558,14 +565,14 @@ static void tempHumidity_Average(uint8_t sensorNumber)
 {
 	/* Average each reading separately */
 
-	TempHumidityDataAverage[0] = (TempHumidityDataBuffer[0][0] + TempHumidityDataBuffer[1][0])/DHT11_NUMBER_OF_SENSORS;
-	TempHumidityDataAverage[1] = (TempHumidityDataBuffer[0][1] + TempHumidityDataBuffer[1][1])/DHT11_NUMBER_OF_SENSORS;
-	TempHumidityDataAverage[2] = (TempHumidityDataBuffer[0][2] + TempHumidityDataBuffer[1][2])/DHT11_NUMBER_OF_SENSORS;
-	TempHumidityDataAverage[3] = (TempHumidityDataBuffer[0][3] + TempHumidityDataBuffer[1][3])/DHT11_NUMBER_OF_SENSORS;
+	TempHumidityDataAverage[0] = (TempHumidityDataBuffer[0][0] + TempHumidityDataBuffer[1][0])/DHT22_NUMBER_OF_SENSORS;
+	TempHumidityDataAverage[1] = (TempHumidityDataBuffer[0][1] + TempHumidityDataBuffer[1][1])/DHT22_NUMBER_OF_SENSORS;
+	TempHumidityDataAverage[2] = (TempHumidityDataBuffer[0][2] + TempHumidityDataBuffer[1][2])/DHT22_NUMBER_OF_SENSORS;
+	TempHumidityDataAverage[3] = (TempHumidityDataBuffer[0][3] + TempHumidityDataBuffer[1][3])/DHT22_NUMBER_OF_SENSORS;
 }
 
 /**
-  * @brief Prints messages for DHT11 driver.
+  * @brief Prints messages for DHT22 driver.
   * @param Current Message Flag.
   * @retval None
   */
@@ -575,18 +582,18 @@ static void tempHumidPrintErrorMessage(uint8_t newErrorMessage, uint8_t sensorNu
 	uint8_t sensorBufferNumber = 0;
 	char buff[2];
 
-	if(sensorNumber == DHT11_SENSOR_1)
+	if(sensorNumber == DHT22_SENSOR_1)
 	{
 		sensorBufferNumber = 1;
 	}
-	else if(sensorNumber == DHT11_SENSOR_2)
+	else if(sensorNumber == DHT22_SENSOR_2)
 	{
 		sensorBufferNumber = 2;
 	}
 
 	if(errorMessage != newErrorMessage)
 	{
-		HAL_UART_Transmit(&huart2, (uint8_t*)DHT11ErrorStatusBuffer[newErrorMessage], sizeof(DHT11ErrorStatusBuffer[newErrorMessage]), 200);
+		HAL_UART_Transmit(&huart2, (uint8_t*)DHT22ErrorStatusBuffer[newErrorMessage], sizeof(DHT22ErrorStatusBuffer[newErrorMessage]), 200);
 
 		/* Convert to ASCI */
 		itoa(sensorBufferNumber, buff, 10);

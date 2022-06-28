@@ -14,17 +14,17 @@
 
 
 
-/* DHT11 specifics -----------------------------------------------------------*/
+/* DHT22 specifics -----------------------------------------------------------*/
 
-/* Data from the DHT11 is transmitted over one pin. The data IO line is open
+/* Data from the DHT22 is transmitted over one pin. The data IO line is open
  * drain and there is pull up resistor on the line. There is only data out.
  * In order to receive this data  * the master device must follow the below
  * procedure:
  *
  * 1. Master pulls data line low for 80us
  * 2. Master releases the line and it is pulled up for 80us
- * 3. DHT11 acknowledges data send request and pulls the line low for 80us
- * 4. DHT11 releases the line for 80us and prepares to send data
+ * 3. DHT22 acknowledges data send request and pulls the line low for 80us
+ * 4. DHT22 releases the line for 80us and prepares to send data
  * 5. Each data bit is proceeded by a LOW
  * 6. Data is interpreted by how long the data line is held HIGH
  * 7. HIGH - 26-28us
@@ -57,12 +57,12 @@ uint8_t timerOCStartFlag = FALSE;
 uint8_t timerICStartFlag = FALSE;
 
 uint8_t inputCaptureCount = 0;
-uint8_t sensorNumberConfig = DHT11_SENSOR_1;
+uint8_t sensorNumberConfig = DHT22_SENSOR_1;
 
 /* External variables ---------------------------------------------------------*/
 extern GrowTent_FlagTypeDef flags;
 extern UART_HandleTypeDef huart2;
-extern uint32_t DHT11_DataBufferInputCapture[DHT11_EXPECTED_TRANSITIONS];
+extern uint32_t DHT22_DataBufferInputCapture[DHT22_EXPECTED_TRANSITIONS];
 
 
 /* Private functions ---------------------------------------------------------*/
@@ -220,11 +220,16 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 
 		/* Check if we have reached the expected number of transmissions */
-		if(inputCaptureCount < DHT11_EXPECTED_TRANSITIONS)
+		if(inputCaptureCount < DHT22_EXPECTED_TRANSITIONS)
 		{
 			/* Get period of last pulse */
-			DHT11_DataBufferInputCapture[inputCaptureCount] = HAL_TIM_ReadCapturedValue(&tim2IC, sensorNumberConfig);
-			inputCaptureCount++;
+			DHT22_DataBufferInputCapture[inputCaptureCount] = HAL_TIM_ReadCapturedValue(&tim2IC, sensorNumberConfig);
+
+			//Check that we are not getting two 0s at start
+			if(DHT22_DataBufferInputCapture[inputCaptureCount] > 20)
+			{
+				inputCaptureCount++;
+			}
 
 			/* Start the Input Compare Timer again */
 			HAL_TIM_IC_Start_IT(&tim2IC, sensorNumberConfig);

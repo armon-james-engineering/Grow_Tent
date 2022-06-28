@@ -126,7 +126,7 @@ static void update_Sensors(void)
 {
 	while(flags.tempHumidDataReadyFlag == 0)
 	{
-		 TempHumid_Read(DHT11_SENSOR_1);
+		 TempHumid_Read(DHT22_SENSOR_1);
 	}
 
 	 /* Reset flags */
@@ -134,7 +134,7 @@ static void update_Sensors(void)
 /*
 	while(flags.tempHumidDataReadyFlag == 0)
 	{
-		 TempHumid_Read(DHT11_SENSOR_2);
+		 TempHumid_Read(DHT22_SENSOR_2);
 	}*/
 }
 
