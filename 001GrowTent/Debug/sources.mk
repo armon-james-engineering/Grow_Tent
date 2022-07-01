@@ -26,6 +26,7 @@ Core/SD_Card/FATFS/App \
 Core/SD_Card/FATFS/Target \
 Core/SD_Card/Middlewares/Third_Party/FatFs/src \
 Core/SD_Card/Middlewares/Third_Party/FatFs/src/option \
+Core/ST7565 \
 Core/Src \
 Core/Startup \
 Drivers/STM32L4xx_HAL_Driver/Src \

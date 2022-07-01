@@ -44,8 +44,10 @@ extern "C" {
 #include "LCD_Control.h"
 #include "Monitor_GrowTent.h"
 #include "SD_Card_Control.h"
-
-
+#include "LCD_ST7565_Control.h"
+#include "fonts.h"
+#include "ST7565.h"
+#include "bitmap.h"
 
 /* Set global definitions-----------------------------------------------------*/
 #define debug
@@ -84,6 +86,18 @@ void Error_Handler(void);
 #define TEMPHUMID_2_PIN 					GPIO_PIN_1			//A1
 #define TEMPHUMID_PORT 						GPIOA
 
+/* Physical connections for ST7565 CD connections -----------------------------------------*/
+/* This is defined in the header file ST7565.h
+
+#define ST7565_DC_GPIO_Port					GPIOA
+#define	ST7565_DC_Pin						GPIO_PIN_3			//A2 -> RS
+#define ST7565_RES_GPIO_Port				GPIOA
+#define	ST7565_RES_Pin						GPIO_PIN_4			//A3 -> RES(RSE)
+#define ST7565_CS_GPIO_Port					GPIOA
+#define	ST7565_CS_Pin						GPIO_PIN_5			//A4 -> CS (this pin must have SB18 disconnected to work. It is connected be default on the nano)
+*/
+#define ST7565_PORT							GPIOA				//Port used for all of the signals above
+
 /* Physical connections for relays------------------------ --------------------------*/
 #define MAIN_LIGHT_RELAY_PIN				GPIO_PIN_0			//D3 -> IN1
 #define	EXTRACTOR_FAN_RELAY_PIN				GPIO_PIN_1			//D6 -> IN2
@@ -107,9 +121,9 @@ void Error_Handler(void);
 #define SPI_CS_PIN							GPIO_PIN_8			//D9
 #define SPI_CS_PORT							GPIOA
 
-#define SENSOR_UPDATE_VALUE					6000U			//in ms
-#define LCD_UPDATE_VALUE					1000U			//in ms
-#define MODE_UPDATE_VALUE					10000U			//in ms
+#define SENSOR_UPDATE_VALUE					5000U				//in ms
+#define LCD_UPDATE_VALUE					1000U				//in ms
+#define MODE_UPDATE_VALUE					10000U				//in ms
 
 
 #define RUNNING								1U
@@ -121,6 +135,7 @@ void Error_Handler(void);
 
 #define USART_TIMEOUT_VALUE					100U
 #define I2C_TIMEOUT_VALUE					100U
+
 
 
 

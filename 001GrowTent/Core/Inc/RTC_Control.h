@@ -21,7 +21,7 @@
 #define CURRENT_YEAR			22
 
 #define CURRENT_SECONDS			00
-#define CURRENT_MINUTES			00
+#define CURRENT_MINUTES			10
 #define CURRENT_HOURS			12
 
 #define DAY_CYCLE_BEGIN			8

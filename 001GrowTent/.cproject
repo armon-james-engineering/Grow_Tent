@@ -44,6 +44,7 @@
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1852656128" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:\Users\armon\OneDrive\Documents\Embedded C Development\Code Files and Workspace\target\001GrowTent\Core\SD_Card&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\armon\OneDrive\Documents\Embedded C Development\Code Files and Workspace\target\Grow_Tent\001GrowTent\Core\ST7565&quot;"/>
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
 									<listOptionValue builtIn="false" value="../Drivers/STM32L4xx_HAL_Driver/Inc"/>
 									<listOptionValue builtIn="false" value="../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy"/>

@@ -1,14 +1,15 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  *
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
+/*
+ *
+ * 001GrowTent
+ * main.c
+ *
+ * File Purpose:
+ *
+ *  Created on: 30 Jun 2022
+ *  Author: Armon H. James
+ */
+
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -39,7 +40,6 @@ void SystemClock_Config(void);
 void MX_GPIO_Init(void);
 void MX_USART2_UART_Init(void);
 void MX_FATFS_Init(void);
-static void update_LCD(void);
 static void update_Sensors(void);
 static void I2C_Setup(void);
 static void SPI_Setup(void);
@@ -73,7 +73,8 @@ int main(void)
   TempHumid_Init();
   RTC_Setup();
   RTC_GetTimeDate();
-  LCD_I2C_Init();
+  ST7565_Init();
+  LCD_ST7565_Init();
   MX_FATFS_Init();
   SD_Control_Init();
 
@@ -87,11 +88,12 @@ int main(void)
   {
 	 /* Wait for elapsed sensor time */
 
+
 	if(flags.LCDUpdateFlag)
 	{
 		//HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 		RTC_GetTimeDate();
-		update_LCD();
+		LCD_ST7565_Update();
 
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		/* Reset flags */
@@ -136,84 +138,6 @@ static void update_Sensors(void)
 	{
 		 TempHumid_Read(DHT22_SENSOR_2);
 	}*/
-}
-
-/**
-  * @brief  This function is used to format the values and print to the LCD display.
-  * @retval None
-  */
-static void update_LCD(void)
-{
-	/* Array of text to mix with integers */
-	unsigned char characterASCII[6] = {"T:.H0 "};
-	unsigned char dayASCII[] = {"Day"};
-	unsigned char nightASCII[] = {"Night"};
-	unsigned char errorASCII[] = {"Error"};
-
-	/* First, clear the display. Cursor will return home */
-
-	/* Temperature */
-	LCD_SetCursorPosition(0x00, 0x00);
-	LCD_WriteAlphaLCD((uint8_t*)&characterASCII[0], sizeof(characterASCII[0]));
-	LCD_WriteAlphaLCD((uint8_t*)&characterASCII[1], sizeof(characterASCII[1]));
-	LCD_WriteNumericLCD(&systemVariables.temperature_int, sizeof(systemVariables.temperature_int));
-	LCD_WriteAlphaLCD((uint8_t*)&characterASCII[2], sizeof(characterASCII[2]));
-	LCD_WriteNumericLCD(&systemVariables.temperature_frac, sizeof(systemVariables.temperature_frac));
-
-	/* Humidity */
-	/* Move cursor to second row first column */
-	LCD_SetCursorPosition(0x01, 0x00);
-	LCD_WriteAlphaLCD((uint8_t*)&characterASCII[3], sizeof(characterASCII[3]));
-	LCD_WriteAlphaLCD((uint8_t*)&characterASCII[1], sizeof(characterASCII[1]));
-	LCD_WriteNumericLCD(&systemVariables.humidity_int, sizeof(systemVariables.humidity_int));
-	LCD_WriteAlphaLCD((uint8_t*)&characterASCII[2], sizeof(characterASCII[2]));
-	LCD_WriteNumericLCD(&systemVariables.humidity_frac, sizeof(systemVariables.humidity_frac));
-
-	/* Time */
-	if(flags.rtcBackupValidFlag == 0)
-	{
-		LCD_SetCursorPosition(0x00, 0x08);
-		if(systemVariables.timeHours < 10)
-		{
-			LCD_WriteAlphaLCD((uint8_t*)&characterASCII[4], sizeof(characterASCII[4]));
-		}
-		LCD_WriteNumericLCD(&systemVariables.timeHours, sizeof(systemVariables.timeHours));
-		LCD_WriteAlphaLCD((uint8_t*)&characterASCII[1], sizeof(characterASCII[1]));
-		if(systemVariables.timeMinutes < 10)
-		{
-			LCD_WriteAlphaLCD((uint8_t*)&characterASCII[4], sizeof(characterASCII[4]));
-		}
-		LCD_WriteNumericLCD(&systemVariables.timeMinutes, sizeof(systemVariables.timeMinutes));
-		LCD_WriteAlphaLCD((uint8_t*)&characterASCII[1], sizeof(characterASCII[1]));
-		if(systemVariables.timeSeconds < 10)
-		{
-			LCD_WriteAlphaLCD((uint8_t*)&characterASCII[4], sizeof(characterASCII[4]));
-		}
-		LCD_WriteNumericLCD(&systemVariables.timeSeconds, sizeof(systemVariables.timeSeconds));
-
-		/* Day Or Night Flag */
-		/* Move cursor to first row and to the right */
-		if(flags.dayNightFlag == DAY)
-		{
-			LCD_SetCursorPosition(0x01, 0x0B);
-			LCD_WriteAlphaLCD((uint8_t*)&characterASCII[5], sizeof(characterASCII[5]));
-			LCD_WriteAlphaLCD((uint8_t*)&characterASCII[5], sizeof(characterASCII[5]));
-			LCD_SetCursorPosition(0x01, 0x0D);
-			LCD_WriteAlphaLCD((uint8_t*)dayASCII, sizeof(dayASCII));
-		}
-		else
-		{
-			LCD_SetCursorPosition(0x01, 0x0B);
-			LCD_WriteAlphaLCD((uint8_t*)nightASCII, sizeof(nightASCII));
-		}
-	}
-	else
-	{
-		LCD_SetCursorPosition(0x00, 0x08);
-		LCD_WriteAlphaLCD((uint8_t*)&errorASCII[0], sizeof(errorASCII[0]));
-	}
-
-
 }
 
 /**
@@ -294,4 +218,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-

@@ -125,7 +125,7 @@ void SD_Control_Init(void)
 		//Copy in a string
 		//strncpy((char*)readBuf, "A new file is made!", 19);
 		UINT bytesWrote;
-		char buff[] = {"Time, \tDate, \tTemperature, \tHumidity"};
+		char buff[] = {"Time, \tDate, \tTemperature, \tHumidity, \tMode"};
 
 		fres = f_write(&fil, buff, sizeof(buff), &bytesWrote);
 		if(fres == FR_OK)
@@ -195,6 +195,13 @@ void SD_Control_Write(void)
 	fres = f_putc(characterASCII[5], &fil);
 
 	itoa(systemVariables.humidity_int, buff, 10);
+	fres = f_puts(buff, &fil);
+
+	/* Comma */
+	fres = f_putc(characterASCII[2], &fil);
+	fres = f_putc(characterASCII[5], &fil);
+
+	itoa(systemVariables.system_mode, buff, 10);
 	fres = f_puts(buff, &fil);
 
 	f_close(&fil);

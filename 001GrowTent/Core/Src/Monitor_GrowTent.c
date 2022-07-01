@@ -42,6 +42,7 @@ void GrowTent_Mode(void)
 
 	char buff[2];
 
+	systemVariables.system_mode = growTentMode;
 	itoa(growTentMode, buff, 10);
 	HAL_UART_Transmit(&huart2, (uint8_t*)"Mode: ", sizeof("Mode: "), USART_TIMEOUT_VALUE);
 	HAL_UART_Transmit(&huart2,(uint8_t*)buff, sizeof(buff), USART_TIMEOUT_VALUE);
@@ -142,13 +143,19 @@ void GrowTent_Mode(void)
 		/* Nominal operation mode (night) */
 		if(growTentMode == 0)
 		{
+			if(systemVariables.humidity_int < HUMIDITY_LOW)
+			{
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
+				growTentMode = 5;
+			}
 			if(systemVariables.humidity_int > HUMIDITY_HIGH)
 			{
 				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_ON);
 				Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
 				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
 				Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
-				growTentMode = 5;
+				growTentMode = 6;
 			}
 			else
 			{
@@ -158,22 +165,23 @@ void GrowTent_Mode(void)
 				Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
 			}
 		}
+		/* Humidity too low (night). */
+		if(growTentMode == 5)
+		{
+			if(systemVariables.humidity_int > HUMIDITY_NOMINAL)
+			{
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
+				growTentMode = 0;
+			}
+		}
 		/* Humidity too high (night). */
-		else if(growTentMode == 5)
+		if(growTentMode == 6)
 		{
 			if(systemVariables.humidity_int < HUMIDITY_NOMINAL)
 			{
 				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
 				growTentMode = 0;
 			}
-		}
-		else
-		{
-			Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
-			Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
-			Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
-			Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_OFF);
-			growTentMode = 0;
 		}
 	}
 }
