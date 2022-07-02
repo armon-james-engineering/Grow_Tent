@@ -25,7 +25,9 @@ void LCD_ST7565_Init(void)
 {
 	ST7565_Clear_buffer();
 
-	ST7565_DisplayOnOff( 1 );
+	ST7565_DisplayOnOff(CMD_DISPLAY_ON);
+
+	ST7565_Update();
 
 	ST7565_Clear();
 
@@ -33,12 +35,11 @@ void LCD_ST7565_Init(void)
 	ST7565_Update();
 	/*char text[] = "Initializing";
 
-
 	ST7565_Print (LCD_ST7565_SPLASH_X_START, LCD_ST7565_SPLASH_Y_START, text, &Font_7x9, 1, PIX_ON );
 
 	ST7565_Update();*/
 
-	HAL_Delay (8000);
+	HAL_Delay (5000);
 
 	ST7565_Clear();
 
@@ -117,9 +118,6 @@ void LCD_ST7565_Update(void)
 		ST7565_Print (LCD_ST7565_TIME_X_START + timeOffsetCount, LCD_ST7565_TIME_Y_START, buff, &Font_7x9, 1, PIX_ON );
 		timeOffsetCount += (LCD_ST7565_7x9_X_OFFSET * strlen(buff));
 	}
-
-	//itoa(timeOffsetCount, buff, 10);
-	//HAL_UART_Transmit(&huart2, (uint8_t*)buff, sizeof(buff), USART_TIMEOUT_VALUE);
 
 	/* Update the Temperature and Humidity Readings -------------------------------------------------------------------------------*/
 

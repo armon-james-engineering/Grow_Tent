@@ -55,12 +55,12 @@ void MX_GPIO_Init(void)
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(TEMPHUMID_PORT, &GPIO_InitStruct);
 
-	/*Configure GPIO pin : PA8 SPI CS pin */
-	GPIO_InitStruct.Pin = SPI_CS_PIN;
+	/*Configure GPIO pin : PA8 SPI SD Card CS pin */
+	GPIO_InitStruct.Pin = SD_CS_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(SPI_CS_PORT, &GPIO_InitStruct);
+	HAL_GPIO_Init(SD_CS_GPIO_Port, &GPIO_InitStruct);
 
 	/*Configure GPIO pin : PA3 PA4 PA5 LCD Pins */
 	GPIO_InitStruct.Pin = DC_Pin | RES_Pin | CS_Pin;

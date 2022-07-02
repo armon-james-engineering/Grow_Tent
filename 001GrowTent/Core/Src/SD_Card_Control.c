@@ -23,7 +23,8 @@ extern SPI_HandleTypeDef hspi1;
 FATFS FatFs; 	//Fatfs handle
 FIL fil; 		//File handle
 FRESULT fres; //Result after operations
-char fullFileName[] = {"Log_"};
+char fullFileName[9] = {"Log_"};
+//char dateSeperator[] = {""};
 char fileNameType[] = {".txt"};
 
 static void myprintf(const char *fmt, ...);
@@ -109,8 +110,12 @@ void SD_Control_Init(void)
 		char monthFile[3];
 		itoa(systemVariables.dateMonth, monthFile, 10);
 		strcat(fullFileName, dateFile);
+		//strcat(fullFileName, dateSeperator),
 		strcat(fullFileName, monthFile);
 		strcat(fullFileName, fileNameType);
+
+		HAL_UART_Transmit(&huart2, (uint8_t*)fullFileName, sizeof(fullFileName), USART_TIMEOUT_VALUE);
+		HAL_UART_Transmit(&huart2, (uint8_t*)"\n", sizeof("\n"), USART_TIMEOUT_VALUE);
 
 		fres = f_open(&fil, fullFileName, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
 		if(fres == FR_OK)
@@ -185,7 +190,6 @@ void SD_Control_Write(void)
 	/* Comma */
 	fres = f_putc(characterASCII[2], &fil);
 	fres = f_putc(characterASCII[5], &fil);
-	fres = f_putc(characterASCII[5], &fil);
 
 	itoa(systemVariables.temperature_int, buff, 10);
 	fres = f_puts(buff, &fil);
@@ -199,6 +203,8 @@ void SD_Control_Write(void)
 
 	/* Comma */
 	fres = f_putc(characterASCII[2], &fil);
+	fres = f_putc(characterASCII[5], &fil);
+	fres = f_putc(characterASCII[5], &fil);
 	fres = f_putc(characterASCII[5], &fil);
 
 	itoa(systemVariables.system_mode, buff, 10);

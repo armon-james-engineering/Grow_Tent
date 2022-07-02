@@ -14,12 +14,12 @@
 
 /* Values for operating grow tent at nominal --------------------------------------------------*/
 
-#define HUMIDITY_LOW					60U
-#define HUMIDITY_NOMINAL				65U
-#define HUMIDITY_HIGH					70U
-#define TEMPERATURE_LOW					21U
-#define TEMPERATURE_NOMINAL				24U
-#define TEMPERATURE_HIGH				26U
+#define HUMIDITY_LOW					65U
+#define HUMIDITY_NOMINAL				70U
+#define HUMIDITY_HIGH					75U
+#define TEMPERATURE_LOW					23U
+#define TEMPERATURE_NOMINAL				25U
+#define TEMPERATURE_HIGH				27U
 
 /* Public Functions ----------------------------------------------------------------------------*/
 void GrowTent_Mode(void);
