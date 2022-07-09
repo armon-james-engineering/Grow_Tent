@@ -162,15 +162,17 @@ void LCD_ST7565_Update(void)
 	modeOffsetCount += (LCD_ST7565_7x9_X_OFFSET * strlen(buff));
 
 	ST7565_Update();
-
+	ST7565_Clear_buffer();
 
 	if(refreshCount < 10)
 	{
-		ST7565_Clear_buffer();
+		//ST7565_Clear_buffer();
+		refreshCount++;
 	}
 	else
 	{
-		ST7565_Clear();
+		//ST7565_Clear();
+		refreshCount = 0;
 	}
 }
 

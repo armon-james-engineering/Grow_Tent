@@ -136,7 +136,7 @@ enum PixelStatus{ PIX_OFF, PIX_ON };
 #define CMD_DISPLAY_OFF   			0xAE
 #define CMD_DISPLAY_ON    			0xAF
 
-#define CMD_SET_DISP_START_LINE  	0x40
+#define CMD_SET_DISP_START_LINE  	0x90
 #define CMD_SET_PAGE  				0xB0
 
 #define CMD_SET_COLUMN_UPPER  		0x10

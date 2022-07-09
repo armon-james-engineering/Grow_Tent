@@ -14,8 +14,8 @@
 
 /* Values for operating grow tent at nominal --------------------------------------------------*/
 
-#define HUMIDITY_LOW					65U
-#define HUMIDITY_NOMINAL				70U
+#define HUMIDITY_LOW					60U
+#define HUMIDITY_NOMINAL				67U
 #define HUMIDITY_HIGH					75U
 #define TEMPERATURE_LOW					23U
 #define TEMPERATURE_NOMINAL				25U

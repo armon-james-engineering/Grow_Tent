@@ -329,7 +329,7 @@ void ST7565_Init( void ){
 	HAL_Delay(1);
 	
 	// делитель внутреннего резистора установлен на 7 (от 0..7)	
-	ST7565_w_cmd( CMD_SET_RESISTOR_RATIO | 0x7 );    //Regulator Resistor Selection   
+	ST7565_w_cmd( CMD_SET_RESISTOR_RATIO | 0x7 );    //Regulator Resistor Selection
 	
 	HAL_Delay(1);
 	
@@ -731,6 +731,7 @@ void ST7565_Print(int16_t x, int16_t y, char* str, FontDef_t* Font, uint8_t mult
 		/* Increase string pointer */
 		str++;
 	}
+	HAL_Delay(1);
 }
 //----------------------------------------------------------------------------------
 

@@ -26,6 +26,7 @@ FRESULT fres; //Result after operations
 char fullFileName[9] = {"Log_"};
 //char dateSeperator[] = {""};
 char fileNameType[] = {".txt"};
+uint8_t fileExistsFlag = 0;
 
 static void myprintf(const char *fmt, ...);
 
@@ -77,34 +78,7 @@ void SD_Control_Init(void)
 
 		myprintf("SD card stats:\r\n%10lu KiB total drive space.\r\n%10lu KiB available.\r\n", total_sectors / 2, free_sectors / 2);
 
-		//Now let's try to open file "test.txt"
-		/*fres = f_open(&fil, "Test.txt", FA_READ);
-		if (fres != FR_OK)
-		{
-			myprintf("f_open error (%i)\r\n", fres);
-			while(1);
-		}
-		myprintf("I was able to open 'Log.txt' for reading!\r\n");
-
-		//Read 30 bytes from "Test.txt" on the SD card
-		BYTE readBuf[30];
-
-		//We can either use f_read OR f_gets to get data out of files
-		//f_gets is a wrapper on f_read that does some string formatting for us
-		TCHAR* rres = f_gets((TCHAR*)readBuf, 30, &fil);
-		if(rres != 0)
-		{
-			myprintf("Read string from 'test.txt' contents: %s\r\n", readBuf);
-		}
-		else
-		{
-			myprintf("f_gets error (%i)\r\n", fres);
-		} */
-
-		//Be a tidy kiwi - don't forget to close your file!
-		//f_close(&fil);
-
-		//Now let's try and write to file
+		//Now let's try and open a file or write to an exiting file if it is already there
 		char dateFile[3];
 		itoa(systemVariables.dateDate, dateFile, 10);
 		char monthFile[3];
@@ -117,33 +91,59 @@ void SD_Control_Init(void)
 		HAL_UART_Transmit(&huart2, (uint8_t*)fullFileName, sizeof(fullFileName), USART_TIMEOUT_VALUE);
 		HAL_UART_Transmit(&huart2, (uint8_t*)"\n", sizeof("\n"), USART_TIMEOUT_VALUE);
 
-		fres = f_open(&fil, fullFileName, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
+
+		//Now let's try to open file "Log_(the current date code)"
+		fres = f_open(&fil, fullFileName, FA_READ);
 		if(fres == FR_OK)
 		{
-			myprintf("I was able to open %s for writing\r\n", fullFileName);
+			myprintf("I was able to open an existing file called %s for writing\r\n", fullFileName);
+			fileExistsFlag = 1;
+
+			//Read some bytes from "Test.txt" on the SD card
+			BYTE readBuf[200];
+
+			//We can either use f_read OR f_gets to get data out of files
+			//f_gets is a wrapper on f_read that does some string formatting for us
+			TCHAR* rres = f_gets((TCHAR*)readBuf, 200, &fil);
+			if(rres != 0)
+			{
+				myprintf("Read string from %s contents: %s\r\n", fullFileName, readBuf);
+			}
+			else
+			{
+				myprintf("f_gets error (%i)\r\n", fres);
+			}
+			f_close(&fil);
+		}
+		else if (fres == FR_NO_FILE)
+		{
+			fres = f_open(&fil, fullFileName, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
+			if(fres == FR_OK)
+			{
+				myprintf("I was able to open a new file %s for writing\r\n", fullFileName);
+				fileExistsFlag = 0;
+
+				UINT bytesWrote;
+				char buff[] = {"Time, \tDate, \tTemperature, \tHumidity, \tMode"};
+
+				HAL_Delay(10);
+
+				fres = f_write(&fil, buff, sizeof(buff), &bytesWrote);
+				if(fres == FR_OK)
+				{
+					myprintf("Wrote %i bytes to %s!\r\n", bytesWrote, fullFileName);
+				}
+				else
+				{
+					myprintf("f_write error (%i)\r\n", fres);
+				}
+				f_close(&fil);
+			}
 		}
 		else
 		{
 			myprintf("f_open error (%i)\r\n", fres);
 		}
-
-		//Copy in a string
-		//strncpy((char*)readBuf, "A new file is made!", 19);
-		UINT bytesWrote;
-		char buff[] = {"Time, \tDate, \tTemperature, \tHumidity, \tMode"};
-
-		fres = f_write(&fil, buff, sizeof(buff), &bytesWrote);
-		if(fres == FR_OK)
-		{
-			myprintf("Wrote %i bytes to %s!\r\n", bytesWrote, fullFileName);
-		}
-		else
-		{
-			myprintf("f_write error (%i)\r\n", fres);
-		}
-
-		//Be a tidy kiwi - don't forget to close your file!
-		f_close(&fil);
 
 		//We're done, so de-mount the drive
 		//f_mount(NULL, "", 0);
@@ -190,6 +190,7 @@ void SD_Control_Write(void)
 	/* Comma */
 	fres = f_putc(characterASCII[2], &fil);
 	fres = f_putc(characterASCII[5], &fil);
+	fres = f_putc(characterASCII[5], &fil);
 
 	itoa(systemVariables.temperature_int, buff, 10);
 	fres = f_puts(buff, &fil);
@@ -203,7 +204,6 @@ void SD_Control_Write(void)
 
 	/* Comma */
 	fres = f_putc(characterASCII[2], &fil);
-	fres = f_putc(characterASCII[5], &fil);
 	fres = f_putc(characterASCII[5], &fil);
 	fres = f_putc(characterASCII[5], &fil);
 
