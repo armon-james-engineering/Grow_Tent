@@ -1,4 +1,4 @@
-Core/Src/LCD_ST7565_Control.o: ../Core/Src/LCD_ST7565_Control.c \
+Core/Src/CCS811_GasSensor.o: ../Core/Src/CCS811_GasSensor.c \
  ../Core/Inc/main.h ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../Core/Inc/stm32l4xx_hal_conf.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
@@ -49,8 +49,7 @@ Core/Src/LCD_ST7565_Control.o: ../Core/Src/LCD_ST7565_Control.c \
  C:/Users/armon/OneDrive/Documents/Embedded\ C\ Development/Code\ Files\ and\ Workspace/target/Grow_Tent/001GrowTent/Core/ST7565/fonts.h \
  C:/Users/armon/OneDrive/Documents/Embedded\ C\ Development/Code\ Files\ and\ Workspace/target/Grow_Tent/001GrowTent/Core/ST7565/ST7565.h \
  C:/Users/armon/OneDrive/Documents/Embedded\ C\ Development/Code\ Files\ and\ Workspace/target/Grow_Tent/001GrowTent/Core/ST7565/fonts.h \
- C:/Users/armon/OneDrive/Documents/Embedded\ C\ Development/Code\ Files\ and\ Workspace/target/Grow_Tent/001GrowTent/Core/ST7565/bitmap.h \
- ../Core/Inc/LCD_ST7565_Control.h
+ C:/Users/armon/OneDrive/Documents/Embedded\ C\ Development/Code\ Files\ and\ Workspace/target/Grow_Tent/001GrowTent/Core/ST7565/bitmap.h
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 ../Core/Inc/stm32l4xx_hal_conf.h:
@@ -108,4 +107,3 @@ C:/Users/armon/OneDrive/Documents/Embedded\ C\ Development/Code\ Files\ and\ Wor
 C:/Users/armon/OneDrive/Documents/Embedded\ C\ Development/Code\ Files\ and\ Workspace/target/Grow_Tent/001GrowTent/Core/ST7565/ST7565.h:
 C:/Users/armon/OneDrive/Documents/Embedded\ C\ Development/Code\ Files\ and\ Workspace/target/Grow_Tent/001GrowTent/Core/ST7565/fonts.h:
 C:/Users/armon/OneDrive/Documents/Embedded\ C\ Development/Code\ Files\ and\ Workspace/target/Grow_Tent/001GrowTent/Core/ST7565/bitmap.h:
-../Core/Inc/LCD_ST7565_Control.h:

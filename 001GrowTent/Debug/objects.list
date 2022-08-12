@@ -8,6 +8,7 @@
 "./Core/ST7565/ST7565.o"
 "./Core/ST7565/bitmap.o"
 "./Core/ST7565/fonts.o"
+"./Core/Src/CCS811_GasSensor.o"
 "./Core/Src/Clock_Control.o"
 "./Core/Src/GPIO_Control.o"
 "./Core/Src/LCD_Control.o"
