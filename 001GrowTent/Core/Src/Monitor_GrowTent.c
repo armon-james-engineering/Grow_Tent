@@ -150,7 +150,6 @@ void GrowTent_Mode(void)
 			Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_ON);
 			Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_ON);
 			Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_ON);
-			Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_ON);
 			growTentMode = 0;
 		}
 	}
