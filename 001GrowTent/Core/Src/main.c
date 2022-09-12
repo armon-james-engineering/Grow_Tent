@@ -77,6 +77,7 @@ int main(void)
   LCD_ST7565_Init();
   MX_FATFS_Init();
   SD_Control_Init();
+  GasSensor_Init();
 
 
   /* Initialise flags */
@@ -94,8 +95,9 @@ int main(void)
 		//HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 		RTC_GetTimeDate();
 		LCD_ST7565_Update();
-
+		GasSensor_Read();
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+
 		/* Reset flags */
 		flags.tempHumidDataReadyFlag = 0;
 		flags.LCDUpdateFlag = 0;
@@ -104,7 +106,7 @@ int main(void)
 	if(flags.sensorUpdateFlag)
 	{
 		update_Sensors();
-
+		GasSensor_Read();
 		/* Reset flags */
 		flags.sensorUpdateFlag = 0;
 	}
@@ -113,7 +115,6 @@ int main(void)
 	{
 		GrowTent_Mode();
 		SD_Control_Write();
-
 		/* Reset flags */
 		flags.modeUpdateFlag = 0;
 	}

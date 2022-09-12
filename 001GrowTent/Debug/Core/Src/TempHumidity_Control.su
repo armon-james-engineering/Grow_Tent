@@ -1,9 +1,9 @@
 ../Core/Src/TempHumidity_Control.c:79:6:TempHumid_Init	16	static
 ../Core/Src/TempHumidity_Control.c:114:5:TempHumid_Read	16	static
-../Core/Src/TempHumidity_Control.c:234:13:tempHumid_StartDataReadSequence	56	static
-../Core/Src/TempHumidity_Control.c:277:13:tempHumidity_ConvertRawData	24	static
-../Core/Src/TempHumidity_Control.c:358:13:tempHumid_ConvertDataToIntegers	24	static
-../Core/Src/TempHumidity_Control.c:410:13:tempHumidity_Printout	24	static
-../Core/Src/TempHumidity_Control.c:521:12:tempHumidity_CheckSum_Validate	24	static
-../Core/Src/TempHumidity_Control.c:564:13:tempHumidity_Average	16	static
-../Core/Src/TempHumidity_Control.c:580:13:tempHumidPrintErrorMessage	24	static
+../Core/Src/TempHumidity_Control.c:236:13:tempHumid_StartDataReadSequence	56	static
+../Core/Src/TempHumidity_Control.c:279:13:tempHumidity_ConvertRawData	24	static
+../Core/Src/TempHumidity_Control.c:360:13:tempHumid_ConvertDataToIntegers	24	static
+../Core/Src/TempHumidity_Control.c:412:13:tempHumidity_Printout	24	static
+../Core/Src/TempHumidity_Control.c:523:12:tempHumidity_CheckSum_Validate	24	static
+../Core/Src/TempHumidity_Control.c:566:13:tempHumidity_Average	16	static
+../Core/Src/TempHumidity_Control.c:582:13:tempHumidPrintErrorMessage	24	static

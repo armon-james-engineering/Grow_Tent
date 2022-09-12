@@ -34,7 +34,9 @@ void LCD_ST7565_Update(void);
 #define LCD_ST7565_TEMP_X_START				0															//Where the sensor starts on the X axis
 #define LCD_ST7565_TEMP_Y_START				0															//Where the sensor starts on the Y axis
 #define LCD_ST7565_HUMIDITY_X_START			0															//Where the sensor starts on the Y axis
-#define LCD_ST7565_HUMIDITY_Y_START			LCD_ST7565_SENSOR_Y_START+LCD_ST7565_11x18_Y_OFFSET			//Where the sensor starts on the Y axis
+#define LCD_ST7565_HUMIDITY_Y_START			LCD_ST7565_TEMP_Y_START+LCD_ST7565_11x18_Y_OFFSET			//Where the sensor starts on the Y axis
+#define LCD_ST7565_CO2_X_START				0															//Where the sensor starts on the Y axis
+#define LCD_ST7565_CO2_Y_START				LCD_ST7565_HUMIDITY_Y_START+LCD_ST7565_11x18_Y_OFFSET		//Where the sensor starts on the Y axis
 
 #define LCD_ST7565_MODE_X_START				0															//Where the mode starts on the X axis
 #define LCD_ST7565_MODE_Y_START				56															//Where the mode starts on the Y axis

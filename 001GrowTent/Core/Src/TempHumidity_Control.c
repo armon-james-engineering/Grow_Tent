@@ -146,7 +146,9 @@ int TempHumid_Read(uint8_t sensorNumber)
 
 			if(icTimeOutValue >  DHT22_WAIT_FOR_RESPONSE_TIME)
 			{
+#ifdef debug
 				tempHumidPrintErrorMessage(DHT22_WAIT_FOR_ACK_ERROR, sensorNumber);
+#endif
 				tempHumidity_EndTimers();
 				readSequenceStatus = DHT22_NOT_STARTED;
 				flags.tempHumidDataReadyFlag = 2;

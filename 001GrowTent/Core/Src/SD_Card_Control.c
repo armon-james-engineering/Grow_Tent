@@ -124,7 +124,7 @@ void SD_Control_Init(void)
 				fileExistsFlag = 0;
 
 				UINT bytesWrote;
-				char buff[] = {"Time, \tDate, \tTemperature, \tHumidity, \tMode"};
+				char buff[] = {"Time, \tDate, \tTemperature, \tHumidity, \tMode, \tCO2:"};
 
 				HAL_Delay(10);
 
@@ -153,64 +153,95 @@ void SD_Control_Init(void)
 void SD_Control_Write(void)
 {
 	/* Write all variables to file */
-
 	fres = f_open(&fil, fullFileName, FA_WRITE | FA_OPEN_APPEND);
 
-	char buff[3];
-	unsigned char characterASCII[] = {':','.',',','\n','\r','\t'};
+	/* Check if file open causes error */
+	if(fres != FR_OK)
+	{
+		fres = f_mount(NULL, "", 0); //0=dismount now
+		HAL_Delay(100);
+		fres = f_mount(&FatFs, "", 1); //1=mount now
+		HAL_Delay(100);
+
+		fres = f_open(&fil, fullFileName, FA_WRITE | FA_OPEN_APPEND);
+
+		char buff[] = "\nRemount of drive\n";
+		fres = f_puts(buff, &fil);
+
+		f_close(&fil);
+
+	}
+	else
+	{
+		char buff[4];
+		unsigned char characterASCII[] = {':','.',',','\n','\r','\t'};
 
 
-	fres = f_putc(characterASCII[3], &fil);
+		fres = f_putc(characterASCII[3], &fil);
 
-	itoa(systemVariables.timeHours, buff, 10);
-	fres = f_puts(buff, &fil);
+		/* Time */
+		itoa(systemVariables.timeHours, buff, 10);
+		fres = f_puts(buff, &fil);
 
-	fres = f_putc(characterASCII[0], &fil);
+		fres = f_putc(characterASCII[0], &fil);
 
-	itoa(systemVariables.timeMinutes, buff, 10);
-	fres = f_puts(buff, &fil);
+		itoa(systemVariables.timeMinutes, buff, 10);
+		fres = f_puts(buff, &fil);
 
-	/* Comma */
-	fres = f_putc(characterASCII[2], &fil);
-	fres = f_putc(characterASCII[5], &fil);
+		/* Comma */
+		fres = f_putc(characterASCII[2], &fil);
+		fres = f_putc(characterASCII[5], &fil);
 
-	itoa(systemVariables.dateDate, buff, 10);
-	fres = f_puts(buff, &fil);
+		/* Date */
+		itoa(systemVariables.dateDate, buff, 10);
+		fres = f_puts(buff, &fil);
 
-	fres = f_putc(characterASCII[1], &fil);
+		fres = f_putc(characterASCII[1], &fil);
 
-	itoa(systemVariables.dateMonth, buff, 10);
-	fres = f_puts(buff, &fil);
+		itoa(systemVariables.dateMonth, buff, 10);
+		fres = f_puts(buff, &fil);
 
-	fres = f_putc(characterASCII[1], &fil);
+		fres = f_putc(characterASCII[1], &fil);
 
-	itoa(systemVariables.dateYear, buff, 10);
-	fres = f_puts(buff, &fil);
+		itoa(systemVariables.dateYear, buff, 10);
+		fres = f_puts(buff, &fil);
 
-	/* Comma */
-	fres = f_putc(characterASCII[2], &fil);
-	fres = f_putc(characterASCII[5], &fil);
-	fres = f_putc(characterASCII[5], &fil);
+		/* Comma */
+		fres = f_putc(characterASCII[2], &fil);
+		fres = f_putc(characterASCII[5], &fil);
+		fres = f_putc(characterASCII[5], &fil);
 
-	itoa(systemVariables.temperature_int, buff, 10);
-	fres = f_puts(buff, &fil);
+		/* Temperature */
+		itoa(systemVariables.temperature_int, buff, 10);
+		fres = f_puts(buff, &fil);
 
-	/* Comma */
-	fres = f_putc(characterASCII[2], &fil);
-	fres = f_putc(characterASCII[5], &fil);
+		/* Comma */
+		fres = f_putc(characterASCII[2], &fil);
+		fres = f_putc(characterASCII[5], &fil);
 
-	itoa(systemVariables.humidity_int, buff, 10);
-	fres = f_puts(buff, &fil);
+		/* Humidity */
+		itoa(systemVariables.humidity_int, buff, 10);
+		fres = f_puts(buff, &fil);
 
-	/* Comma */
-	fres = f_putc(characterASCII[2], &fil);
-	fres = f_putc(characterASCII[5], &fil);
-	fres = f_putc(characterASCII[5], &fil);
+		/* Comma */
+		fres = f_putc(characterASCII[2], &fil);
+		fres = f_putc(characterASCII[5], &fil);
+		fres = f_putc(characterASCII[5], &fil);
 
-	itoa(systemVariables.system_mode, buff, 10);
-	fres = f_puts(buff, &fil);
+		/* System Mode */
+		itoa(systemVariables.system_mode, buff, 10);
+		fres = f_puts(buff, &fil);
 
-	f_close(&fil);
+		/* Comma */
+		fres = f_putc(characterASCII[2], &fil);
+		fres = f_putc(characterASCII[5], &fil);
+
+		/* CO2: */
+		itoa(systemVariables.gasSensorCO2, buff, 10);
+		fres = f_puts(buff, &fil);
+
+		f_close(&fil);
+	}
 }
 
 

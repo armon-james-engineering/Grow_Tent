@@ -40,13 +40,14 @@ void GrowTent_Mode(void)
 	 * Heater			-> Running
 	 * Humidity 		-> Running*/
 
-	char buff[2];
-
 	systemVariables.system_mode = growTentMode;
+#ifdef debug
+	char buff[2];
 	itoa(growTentMode, buff, 10);
 	HAL_UART_Transmit(&huart2, (uint8_t*)"Mode: ", sizeof("Mode: "), USART_TIMEOUT_VALUE);
 	HAL_UART_Transmit(&huart2,(uint8_t*)buff, sizeof(buff), USART_TIMEOUT_VALUE);
 	HAL_UART_Transmit(&huart2, (uint8_t*)"\n", sizeof("\n"), USART_TIMEOUT_VALUE);
+#endif
 
 	if(flags.dayNightFlag == DAY)
 	{

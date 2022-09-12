@@ -45,13 +45,15 @@ extern "C" {
 #include "Monitor_GrowTent.h"
 #include "SD_Card_Control.h"
 #include "LCD_ST7565_Control.h"
+#include "CCS811_Gas_Sensor.h"
 #include "fonts.h"
 #include "ST7565.h"
 #include "bitmap.h"
 
 /* Set global definitions-----------------------------------------------------*/
-#define debug
-#define debug1
+//#define debug
+//#define debug1
+#define debug_gasSensor
 //#define setTime
 //#define debugPrintBackupTimeDate
 
@@ -86,7 +88,11 @@ void Error_Handler(void);
 #define TEMPHUMID_2_PIN 					GPIO_PIN_1			//A1
 #define TEMPHUMID_PORT 						GPIOA
 
-/* Physical connections for ST7565 CD connections -----------------------------------------*/
+/* Physical connections for Gas Sensors------------------------------------------------*/
+#define GAS_SENSOR_WAKE_PIN					GPIO_PIN_12			//D2
+#define GAS_SENSOR_WAKE_PORT				GPIOA
+
+/* Physical connections for ST7565 CD connections -------------------------------------*/
 /* This is defined in the header file ST7565.h
 
 #define ST7565_DC_GPIO_Port					GPIOA
@@ -132,7 +138,7 @@ void Error_Handler(void);
 #define NIGHT								0U
 
 #define USART_TIMEOUT_VALUE					100U
-#define I2C_TIMEOUT_VALUE					100U
+#define I2C_TIMEOUT_VALUE					1000U
 
 
 
@@ -148,6 +154,7 @@ typedef struct
 	uint8_t modeUpdateFlag							: 2;
 	uint8_t msTimeBaseFlag							: 2;
 	uint8_t rtcBackupValidFlag						: 2;
+	uint8_t gasSensorValidFlag						: 2;
 }GrowTent_FlagTypeDef;
 
 typedef struct
@@ -164,6 +171,7 @@ typedef struct
 	uint8_t dateDate;
 	uint8_t dateMonth;
 	uint8_t dateYear;
+	uint16_t gasSensorCO2;
 }GrowTent_SystemData;
 
 /* USER CODE BEGIN Private defines */

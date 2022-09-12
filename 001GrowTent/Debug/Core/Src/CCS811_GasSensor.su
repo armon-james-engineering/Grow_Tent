@@ -1,1 +1,2 @@
-../Core/Src/CCS811_GasSensor.c:49:6:GasSensor_Init	4	static
+../Core/Src/CCS811_GasSensor.c:56:6:GasSensor_Init	32	static
+../Core/Src/CCS811_GasSensor.c:94:6:GasSensor_Read	32	static
