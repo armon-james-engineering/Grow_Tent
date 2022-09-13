@@ -136,6 +136,9 @@ void LCD_ST7565_Update(void)
 	ST7565_Print (LCD_ST7565_TEMP_X_START + sensorOffsetCount, LCD_ST7565_TEMP_Y_START, buff, &Font_11x18, 1, PIX_ON );
 	sensorOffsetCount += (LCD_ST7565_11x18_X_OFFSET * strlen(buff));
 
+	ST7565_Print (LCD_ST7565_TEMP_X_START + sensorOffsetCount, LCD_ST7565_TEMP_Y_START, (char*)"C", &Font_11x18, 1, PIX_ON );
+	sensorOffsetCount += (LCD_ST7565_11x18_X_OFFSET * strlen("C"));
+
 	/* Humidity */
 	sensorOffsetCount = 0;
 	ST7565_Print (LCD_ST7565_HUMIDITY_X_START + sensorOffsetCount, LCD_ST7565_HUMIDITY_Y_START, (char*)"H:", &Font_11x18, 1, PIX_ON );
@@ -152,14 +155,20 @@ void LCD_ST7565_Update(void)
 	ST7565_Print (LCD_ST7565_HUMIDITY_X_START + sensorOffsetCount, LCD_ST7565_HUMIDITY_Y_START, buff, &Font_11x18, 1, PIX_ON );
 	sensorOffsetCount += (LCD_ST7565_11x18_X_OFFSET * strlen(buff));
 
+	ST7565_Print (LCD_ST7565_HUMIDITY_X_START + sensorOffsetCount, LCD_ST7565_HUMIDITY_Y_START, (char*)"%", &Font_11x18, 1, PIX_ON );
+	sensorOffsetCount += (LCD_ST7565_11x18_X_OFFSET * strlen("%"));
+
 	/* CO2: */
 	sensorOffsetCount = 0;
-	ST7565_Print (LCD_ST7565_MODE_X_START, LCD_ST7565_MODE_Y_START, (char*)"CO2:", &Font_11x18, 1, PIX_ON );
-	modeOffsetCount += (LCD_ST7565_11x18_X_OFFSET * strlen("CO2:"));
+	ST7565_Print (LCD_ST7565_HUMIDITY_X_START + sensorOffsetCount, LCD_ST7565_CO2_Y_START, (char*)"CO2:", &Font_11x18, 1, PIX_ON );
+	sensorOffsetCount += (LCD_ST7565_11x18_X_OFFSET * strlen("CO2:"));
 
 	itoa(systemVariables.gasSensorCO2, buff, 10);
-	ST7565_Print (LCD_ST7565_MODE_X_START + modeOffsetCount, LCD_ST7565_MODE_Y_START, buff, &Font_11x18, 1, PIX_ON );
-	modeOffsetCount += (LCD_ST7565_11x18_X_OFFSET * strlen(buff));
+	ST7565_Print (LCD_ST7565_HUMIDITY_X_START + sensorOffsetCount, LCD_ST7565_CO2_Y_START, buff, &Font_11x18, 1, PIX_ON );
+	sensorOffsetCount += (LCD_ST7565_11x18_X_OFFSET * strlen(buff));
+
+	ST7565_Print (LCD_ST7565_HUMIDITY_X_START + sensorOffsetCount, LCD_ST7565_CO2_Y_START, (char*)"ppm", &Font_11x18, 1, PIX_ON );
+	sensorOffsetCount += (LCD_ST7565_11x18_X_OFFSET * strlen("ppm"));
 
 	/* Update the current Mode ----------------------------------------------------------------------------------------------------*/
 

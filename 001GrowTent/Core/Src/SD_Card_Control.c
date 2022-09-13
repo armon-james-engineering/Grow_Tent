@@ -124,7 +124,7 @@ void SD_Control_Init(void)
 				fileExistsFlag = 0;
 
 				UINT bytesWrote;
-				char buff[] = {"Time, \tDate, \tTemperature, \tHumidity, \tMode, \tCO2:"};
+				char buff[] = {"Time, \tDate, \t\tTemperature, \tHumidity, \tMode, \tCO2:"};
 
 				HAL_Delay(10);
 
