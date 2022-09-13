@@ -56,6 +56,7 @@ extern "C" {
 #define debug_gasSensor
 //#define setTime
 //#define debugPrintBackupTimeDate
+#define debug_growTentMode
 
 /* Externally shared variables -----------------------------------------------*/
 extern I2C_HandleTypeDef i2c1;

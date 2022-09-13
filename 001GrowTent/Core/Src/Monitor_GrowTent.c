@@ -49,6 +49,14 @@ void GrowTent_Mode(void)
 	HAL_UART_Transmit(&huart2, (uint8_t*)"\n", sizeof("\n"), USART_TIMEOUT_VALUE);
 #endif
 
+
+#ifdef debug_growTentMode
+	Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_ON);
+	Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_ON);
+	Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_ON);
+	Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_ON);
+#else
+
 	if(flags.dayNightFlag == DAY)
 	{
 		Power_Control_SetRelay(MAIN_LIGHT_RELAY_PIN, RELAY_ON);
@@ -212,4 +220,5 @@ void GrowTent_Mode(void)
 			growTentMode = 0;
 		}
 	}
+#endif
 }
