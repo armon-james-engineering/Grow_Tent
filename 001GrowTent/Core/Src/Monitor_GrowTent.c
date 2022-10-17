@@ -64,7 +64,7 @@ void GrowTent_Mode(void)
 		/* Nominal operation mode */
 		if(growTentMode == 0)
 		{
-			if(systemVariables.humidity_int < HUMIDITY_LOW)
+			if(systemVariables.humidity_int < HUMIDITY_NOMINAL)
 			{
 				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
 				Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_ON);
@@ -103,14 +103,19 @@ void GrowTent_Mode(void)
 		/* Humidity too low. The most likely scenario */
 		else if(growTentMode == 1)
 		{
-			if(systemVariables.temperature_int > TEMPERATURE_HIGH)
+			if(systemVariables.temperature_int > TEMPERATURE_NOMINAL)
 			{
-				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_ON);
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
 				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
 				Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_ON);
-				growTentMode = 3;
 			}
-			else if(systemVariables.humidity_int > HUMIDITY_NOMINAL)
+			else if(systemVariables.temperature_int < TEMPERATURE_NOMINAL)
+			{
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_ON);
+				Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_ON);
+			}
+			if(systemVariables.humidity_int >= HUMIDITY_NOMINAL)
 			{
 				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_ON);
 				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_ON);
@@ -183,6 +188,13 @@ void GrowTent_Mode(void)
 				Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
 				growTentMode = 6;
 			}
+			else if(systemVariables.temperature_int < TEMPERATURE_NOMINAL)
+			{
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_ON);
+				Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
+				growTentMode = 7;
+			}
 			else
 			{
 				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
@@ -205,6 +217,17 @@ void GrowTent_Mode(void)
 		else if(growTentMode == 6)
 		{
 			if(systemVariables.humidity_int < HUMIDITY_NOMINAL)
+			{
+				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);
+				Power_Control_SetRelay(HUMIDITY_RELAY_PIN, RELAY_OFF);
+				growTentMode = 0;
+			}
+		}
+		/* Temperature too low (night). */
+		else if(growTentMode == 7)
+		{
+			if(systemVariables.temperature_int >= TEMPERATURE_NOMINAL)
 			{
 				Power_Control_SetRelay(EXTRACTOR_FAN_RELAY_PIN, RELAY_OFF);
 				Power_Control_SetRelay(HEATER_RELAY_PIN, RELAY_OFF);

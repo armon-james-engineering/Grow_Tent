@@ -53,10 +53,10 @@ extern "C" {
 /* Set global definitions-----------------------------------------------------*/
 //#define debug
 //#define debug1
-#define debug_gasSensor
+//#define debug_gasSensor
 //#define setTime
 //#define debugPrintBackupTimeDate
-#define debug_growTentMode
+//#define debug_growTentMode
 
 /* Externally shared variables -----------------------------------------------*/
 extern I2C_HandleTypeDef i2c1;
